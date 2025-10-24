@@ -2,8 +2,8 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div>
-      <header>
+    <div className="container w-full border border-red-500">
+      <header className="flex justify-between border border-green-500">
         <div>
           <div>Event Dashboard</div>
           <div>a fastbreak.ai project</div>
@@ -20,9 +20,9 @@ export default function Home() {
         </nav>
       </header>
       <main>
-        <div>Hero</div>
-        <div>Current events</div>
-        <div>Call to action</div>
+        <section>Hero</section>
+        <section>Current events</section>
+        <section>Call to action</section>
       </main>
       <footer>Created with love by RonB</footer>
     </div>
