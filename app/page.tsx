@@ -1,30 +1,63 @@
+"use server";
+import React from "react";
+
 import Link from "next/link";
 
-export default function Home() {
-  return (
-    <div className="container w-full border border-red-500">
-      <header className="flex justify-between border border-green-500">
-        <div>
-          <div>Event Dashboard</div>
-          <div>a fastbreak.ai project</div>
-        </div>
+import classNames from "classnames";
 
-        <nav>
-          <ul>
-            <li>About</li>
-            <li>
-              <Link href="/dashboard">Dashboard</Link>
-            </li>
-            <li>Login</li>
-          </ul>
-        </nav>
+const Container = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  return (
+    <div className={classNames("container m-auto", className)}>{children}</div>
+  );
+};
+
+export default async function Home() {
+  return (
+    <>
+      <header className="flex w-full border border-dotted border-amber-400">
+        <Container className="flex justify-between border border-green-500">
+          <div>
+            <div className="text-2xl font-semibold">Event Dashboard</div>
+            <div>a fastbreak.ai project</div>
+          </div>
+
+          <nav className="flex">
+            <ul className="flex h-fit w-fit gap-3">
+              <li>
+                <Link href="/about">about</Link>
+              </li>
+              <li>
+                <Link href="/dashboard">dashboard</Link>
+              </li>
+              <li>
+                <Link href="/login">login</Link>
+              </li>
+            </ul>
+          </nav>
+        </Container>
       </header>
-      <main>
-        <section>Hero</section>
-        <section>Current events</section>
-        <section>Call to action</section>
+
+      <main className="border border-red-500">
+        <section>
+          <Container>Hero</Container>
+        </section>
+        <section>
+          <Container>Current events</Container>
+        </section>
+        <section>
+          <Container>Call to action</Container>
+        </section>
       </main>
-      <footer>Created with love by RonB</footer>
-    </div>
+
+      <footer className="flex justify-between border border-green-500">
+        <Container>Created with love by RonB</Container>
+      </footer>
+    </>
   );
 }
