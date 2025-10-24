@@ -57,8 +57,7 @@ Build a full-stack Sports Event Management application where users can create, v
 
 - Use shadcn/ui components throughout
 
-- Forms MUST use [shadcn](https://ui.shadcn.com/docs/components/form)
-  Form component with react-hook-form
+- Forms MUST use [shadcn](https://ui.shadcn.com/docs/components/form). Form component with react-hook-form
 - Consistent styling with Tailwind CSS
 - Loading states and error handling
 - Toast notifications for success/error states
