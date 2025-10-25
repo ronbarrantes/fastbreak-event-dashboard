@@ -45,14 +45,12 @@ Build a full-stack Sports Event Management application where users can create, v
 ## Additional Information
 
 - All database interactions MUST happen server-side
-
   - Server Actions
   - API Routes (Route Handlers)
   - Server Components
 
 - NO direct Supabase client calls from client components
 - Actions over API Routes. At Fastbreak, we’re pushing towards using only actions, instead of API routes.
-
   - Create generic helper(s) to ensure type safety in the application and consistent error handling.
 
 - Use shadcn/ui components throughout
