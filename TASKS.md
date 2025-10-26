@@ -2,11 +2,11 @@
 
 ## Tasks
 
-- [ ] Log in and log out
+- [x] Log in and log out
 
   - [ ] protected routes (middleware)
-  - [ ] Must use Supabase Auth
-  - [ ] Login Page
+  - [x] Must use Supabase Auth
+  - [x] Login Page
   - [ ] logout page
 
 - [ ] got to use grids for CSS
