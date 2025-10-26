@@ -2,7 +2,7 @@
 import React from "react";
 
 import Link from "next/link";
-import dynamic from "next/dynamic";
+import AuthToggleButton from "@/components/auth-toggle-button";
 
 import classNames from "classnames";
 
@@ -19,9 +19,6 @@ const Container = ({
 };
 
 export default async function Home() {
-  const AuthToggleButton = dynamic(() => import("@/components/auth-toggle-button"), {
-    ssr: false,
-  });
   return (
     <>
       <header className="flex w-full border border-dotted border-amber-400">
