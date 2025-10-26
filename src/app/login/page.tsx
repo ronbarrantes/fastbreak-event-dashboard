@@ -1,9 +1,10 @@
 "use client";
 import { useEffect } from "react";
 
+import { useRouter } from "next/navigation";
+
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { useRouter } from "next/navigation";
 
 import { createClient as createBrowserSupabaseClient } from "@/utils/supabase/client";
 
@@ -34,19 +35,3 @@ export default function LoginPage() {
     />
   );
 }
-
-// export default function LoginPage() {
-//   return (
-//     <div
-//       style={{
-//         display: "flex",
-//         flexDirection: "column",
-//         alignItems: "center",
-//         marginTop: "100px",
-//       }}
-//     >
-//       <h1>Sign in</h1>
-//       <GoogleSignInButton />
-//     </div>
-//   );
-// }
