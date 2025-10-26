@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-import { SportEvent } from "./data-table";
+import { SportEvent } from "@/types/types";
 
 export type Payment = {
   id: string;

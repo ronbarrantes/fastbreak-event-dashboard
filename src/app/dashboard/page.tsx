@@ -1,5 +1,6 @@
+import { SportEvent, Venue } from "@/types/types";
 import { columns } from "./columns";
-import { DataTable, SportEvent, Venue } from "./data-table";
+import { DataTable } from "./data-table";
 
 const venues: Venue[] = [
   {
