@@ -32,6 +32,7 @@ export default function LoginPage() {
       supabaseClient={supabase}
       appearance={{ theme: ThemeSupa }}
       providers={["google"]}
+      onlyThirdPartyProviders
     />
   );
 }

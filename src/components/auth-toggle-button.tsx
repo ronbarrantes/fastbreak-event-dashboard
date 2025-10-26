@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+
+import { usePathname, useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { createClient as createBrowserSupabaseClient } from "@/utils/supabase/client";
@@ -27,10 +28,12 @@ export default function AuthToggleButton() {
 
     load();
 
-    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!isActive) return;
-      setIsLoggedIn(Boolean(session));
-    });
+    const { data: subscription } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (!isActive) return;
+        setIsLoggedIn(Boolean(session));
+      }
+    );
 
     return () => {
       isActive = false;
