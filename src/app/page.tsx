@@ -2,6 +2,7 @@
 import React from "react";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 
 import classNames from "classnames";
 
@@ -18,6 +19,9 @@ const Container = ({
 };
 
 export default async function Home() {
+  const AuthToggleButton = dynamic(() => import("@/components/auth-toggle-button"), {
+    ssr: false,
+  });
   return (
     <>
       <header className="flex w-full border border-dotted border-amber-400">
@@ -27,7 +31,7 @@ export default async function Home() {
             <div>a fastbreak.ai project</div>
           </div>
 
-          <nav className="flex">
+          <nav className="flex items-center">
             <ul className="flex h-fit w-fit gap-3">
               <li>
                 <Link href="/about">about</Link>
@@ -35,13 +39,8 @@ export default async function Home() {
               <li>
                 <Link href="/dashboard">dashboard</Link>
               </li>
-              <li>
-                <Link href="/login">login</Link>
-              </li>
-              <li>
-                <Link href="/logout">logout</Link>
-              </li>
             </ul>
+            <AuthToggleButton />
           </nav>
         </Container>
       </header>
