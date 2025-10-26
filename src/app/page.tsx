@@ -2,6 +2,7 @@
 import React from "react";
 
 import Link from "next/link";
+import AuthToggleButton from "@/components/auth-toggle-button";
 
 import classNames from "classnames";
 
@@ -27,7 +28,7 @@ export default async function Home() {
             <div>a fastbreak.ai project</div>
           </div>
 
-          <nav className="flex">
+          <nav className="flex items-center">
             <ul className="flex h-fit w-fit gap-3">
               <li>
                 <Link href="/about">about</Link>
@@ -35,10 +36,8 @@ export default async function Home() {
               <li>
                 <Link href="/dashboard">dashboard</Link>
               </li>
-              <li>
-                <Link href="/login">login</Link>
-              </li>
             </ul>
+            <AuthToggleButton />
           </nav>
         </Container>
       </header>
