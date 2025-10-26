@@ -1,6 +1,7 @@
 import { SportEvent, Venue } from "@/types/types";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
+import LogoutButton from "@/components/logout-button";
 
 const venues: Venue[] = [
   {
@@ -45,7 +46,10 @@ const data: SportEvent[] = [
 export default function Dashboard() {
   return (
     <div>
-      <div>Menu</div>
+      <div className="flex items-center justify-between mb-4">
+        <div className="text-xl font-semibold">Menu</div>
+        <LogoutButton />
+      </div>
       <DataTable columns={columns} data={data || []} />
     </div>
   );

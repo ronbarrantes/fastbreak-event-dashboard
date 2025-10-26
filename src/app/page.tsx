@@ -38,6 +38,9 @@ export default async function Home() {
               <li>
                 <Link href="/login">login</Link>
               </li>
+              <li>
+                <Link href="/logout">logout</Link>
+              </li>
             </ul>
           </nav>
         </Container>
