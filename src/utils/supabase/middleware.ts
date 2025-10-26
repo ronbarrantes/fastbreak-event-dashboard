@@ -40,13 +40,22 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth") &&
-    !request.nextUrl.pathname.startsWith("/error")
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
+  // Public routes that should never force auth
+  const publicPrefixes = ["/", "/about", "/login", "/auth", "/error"] as const;
+  const isPublicRoute = publicPrefixes.some((prefix) =>
+    prefix === "/" ? request.nextUrl.pathname === "/" : request.nextUrl.pathname.startsWith(prefix)
+  );
+
+  // If user is signed in and on the login page, send them to dashboard
+  if (user && request.nextUrl.pathname.startsWith("/login")) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
+  }
+
+  // If user is not signed in and trying to access a protected route, redirect to login
+  const isProtectedRoute = !isPublicRoute;
+  if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
