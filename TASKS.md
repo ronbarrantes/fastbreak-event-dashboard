@@ -55,5 +55,5 @@
     - [ ] Venues can have multiple events
     - [ ] If user owns a venue, they are the admin of that venue and then they can add and remove participants to the event (maybe)
 
-- ## boonus
+- ## bonus
   - [ ] Light and dark theme
