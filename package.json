@@ -12,7 +12,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "vercel:env": "vercel env pull .env.local",
-    "psql": "dotenv -e .env.local -- psql \"$DATABASE_URL\""
+    "psql": "dotenv -e .env.local -- psql \"$DATABASE_STUDIO_URL\""
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
