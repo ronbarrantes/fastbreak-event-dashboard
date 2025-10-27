@@ -30,6 +30,9 @@ type sports = [
 export type Venue = {
   name: string;
   available: boolean;
+  description?: string;
+  capacity?: number;
+  amenities?: string;
 };
 
 export type SportEvent = {
