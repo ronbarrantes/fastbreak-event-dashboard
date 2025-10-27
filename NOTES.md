@@ -1,0 +1,11 @@
+- ~~signin~~
+- ~~bring in no try-catch~~
+- ~~Bring in toast~~
+- hook database to events
+  - create a fake event
+- ~~create a fake venue~~
+- create form
+- link table to database
+- create search field
+- home page needs to refresh on login and logout
+- fix login for better login with refreshing
