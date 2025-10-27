@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { SportEvent } from "@/types/types";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 
 export type Payment = {
   id: string;
@@ -53,6 +54,38 @@ export const columns: ColumnDef<SportEvent>[] = [
                   </div>
                 ) : null}
               </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+      );
+    },
+  },
+  {
+    id: "actions",
+    header: "",
+    cell: ({ row }) => {
+      const id = row.original.id;
+      return (
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="icon-sm" aria-label="More actions">
+              …
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-48 p-2">
+            <div className="flex flex-col gap-1">
+              <Button
+                variant="ghost"
+                onClick={() => console.log(`editing ${id}`)}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => console.log(`deleting ${id}`)}
+              >
+                Delete
+              </Button>
             </div>
           </PopoverContent>
         </Popover>
