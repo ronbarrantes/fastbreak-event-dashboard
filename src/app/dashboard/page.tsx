@@ -1,52 +1,30 @@
-import { SportEvent, Venue } from "@/types/types";
-import { columns } from "./columns";
+import { getEventsWithVenue } from "@/lib/actions/events";
+import { Button } from "@/components/ui/button";
 import { DataTable } from "./data-table";
+import { columns } from "./columns";
+import { SportEvent, SportType } from "@/types/types";
 
-const venues: Venue[] = [
-  {
-    name: "soccer stadium",
-    available: true,
-  },
-  {
-    name: "gymnasium",
-    available: true,
-  },
-];
+export const dynamic = "force-dynamic";
 
-const data: SportEvent[] = [
-  {
-    id: "m5gr84i9",
-    name: "School championship",
-    sportType: "soccer",
-    date: new Date(2025, 10, 3, 1, 30),
-    description: "a really exciting soccer game",
-    venue: venues[0],
-  },
+export default async function DashboardPage() {
+  const rows = await getEventsWithVenue();
 
-  {
-    id: "m5gr84i9",
-    name: "School championship",
-    sportType: "baseball",
-    date: new Date(2025, 10, 3, 1, 30),
-    description: "a really exciting soccer game",
-    venue: venues[1],
-  },
+  const data: SportEvent[] = rows.map(({ event, venue }) => ({
+    id: event.id,
+    name: event.eventName,
+    sportType: event.sportType as SportType,
+    date: event.startDate ?? null,
+    description: event.description,
+    venue: venue ? { name: venue.name, available: true } : undefined,
+  }));
 
-  {
-    id: "m5gr84i9",
-    name: "School championship",
-    sportType: "football",
-    date: new Date(2025, 10, 3, 1, 30),
-    description: "a really exciting soccer game",
-    venue: venues[0],
-  },
-];
-
-export default function Dashboard() {
   return (
-    <div>
-      <div>Menu</div>
-      <DataTable columns={columns} data={data || []} />
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="text-xl font-semibold">Events</div>
+        <Button>Create New Event</Button>
+      </div>
+      <DataTable columns={columns} data={data} />
     </div>
   );
 }
