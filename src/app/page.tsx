@@ -6,7 +6,7 @@ import Link from "next/link";
 import classNames from "classnames";
 
 import AuthToggleButton from "@/components/auth-toggle-button";
-import { supabase } from "@/lib/supabaseClient";
+import { createClient as createServerSupabaseClient } from "@/utils/supabase/server";
 
 const Container = ({
   children,
@@ -21,11 +21,16 @@ const Container = ({
 };
 
 export default async function Home() {
-  const data = await supabase.auth.getUser();
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  console.log("USER --->>", data);
-
-  //  console.log("USER", supabase.auth.getUser());
+  const displayName =
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    user?.email ||
+    "there";
 
   return (
     <>
@@ -52,7 +57,11 @@ export default async function Home() {
 
       <main className="border border-red-500">
         <section>
-          <Container>Hero</Container>
+          <Container>
+            <h1 className="my-16 text-5xl font-extrabold tracking-tight">
+              Hello {displayName}
+            </h1>
+          </Container>
         </section>
         <section>
           <Container>Current events</Container>
