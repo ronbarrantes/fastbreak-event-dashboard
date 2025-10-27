@@ -13,8 +13,19 @@ export type Payment = {
 
 export const columns: ColumnDef<SportEvent>[] = [
   { accessorKey: "name", header: "Event Name" },
-  { accessorKey: "sportType", header: "SportType" },
-  { accessorKey: "date", header: "Date" },
+  { accessorKey: "sportType", header: "Sport Type" },
+  {
+    accessorKey: "date",
+    header: "Date",
+    cell: ({ row }) => {
+      const value = row.original.date;
+      return value ? new Date(value).toLocaleString() : "";
+    },
+  },
   { accessorKey: "description", header: "Description" },
-  { accessorKey: "venue", header: "Venue" },
+  {
+    accessorKey: "venue",
+    header: "Venue",
+    cell: ({ row }) => row.original.venue?.name ?? "",
+  },
 ];

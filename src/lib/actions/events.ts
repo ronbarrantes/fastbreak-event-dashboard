@@ -3,7 +3,7 @@
 import { desc, eq } from "drizzle-orm";
 
 import { db } from "@/server/db";
-import { event, EventInsert } from "@/server/db/schema";
+import { event, EventInsert, venue } from "@/server/db/schema";
 import { revalidateIfNeeded } from "@/utils/revalidate-if-needed";
 
 type CreateEventInput = Omit<EventInsert, "id" | "createdAt" | "updatedAt">;
@@ -55,4 +55,13 @@ export const deleteEvent = async (
   revalidateIfNeeded(options?.revalidate);
 
   return deleted ?? null;
+};
+
+export const getEventsWithVenue = async () => {
+  const rows = await db
+    .select({ event, venue })
+    .from(event)
+    .leftJoin(venue, eq(event.venueId, venue.id))
+    .orderBy(desc(event.createdAt));
+  return rows;
 };
