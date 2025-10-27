@@ -44,6 +44,9 @@ export default function AuthToggleButton() {
   async function handleClick() {
     if (isLoggedIn) {
       await supabase.auth.signOut();
+      try {
+        await fetch("/api/revalidate-auth", { method: "POST" });
+      } catch {}
       if (pathname !== "/") router.replace("/");
     } else {
       router.push("/login");

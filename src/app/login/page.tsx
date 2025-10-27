@@ -17,8 +17,13 @@ export default function LoginPage() {
       if (data.session) router.replace("/dashboard");
     });
 
-    const { data: listener } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN") router.replace("/dashboard");
+    const { data: listener } = supabase.auth.onAuthStateChange(async (event) => {
+      if (event === "SIGNED_IN") {
+        try {
+          await fetch("/api/revalidate-auth", { method: "POST" });
+        } catch {}
+        router.replace("/dashboard");
+      }
     });
 
     return () => {
