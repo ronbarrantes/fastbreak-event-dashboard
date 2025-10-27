@@ -1,9 +1,16 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import classNames from "classnames";
 
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { SportEvent } from "@/types/types";
-
 export type Payment = {
   id: string;
   amount: number;
@@ -26,6 +33,77 @@ export const columns: ColumnDef<SportEvent>[] = [
   {
     accessorKey: "venue",
     header: "Venue",
-    cell: ({ row }) => row.original.venue?.name ?? "",
+    cell: ({ row }) => {
+      const venue = row.original.venue;
+      if (!venue) return "";
+      return (
+        <Popover>
+          <PopoverTrigger className="text-primary underline underline-offset-2 hover:opacity-80">
+            {venue.name}
+          </PopoverTrigger>
+          <PopoverContent align="start" className="w-80">
+            <div className="space-y-2">
+              <div className="text-sm font-semibold">{venue.name}</div>
+              {venue.description ? (
+                <p className="text-muted-foreground text-sm">
+                  {venue.description}
+                </p>
+              ) : null}
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                {typeof venue.capacity === "number" ? (
+                  <div>
+                    <span className="font-medium">Capacity:</span>{" "}
+                    {venue.capacity}
+                  </div>
+                ) : null}
+                {venue.amenities ? (
+                  <div className="col-span-2">
+                    <span className="font-medium">Amenities:</span>{" "}
+                    {venue.amenities.split(",").map((amenity) => {
+                      const trimmed = amenity.trim();
+                      return (
+                        <Badge key={`${row.id}--${trimmed}`}>{trimmed}</Badge>
+                      );
+                    })}
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+      );
+    },
+  },
+  {
+    id: "actions",
+    header: "",
+    cell: ({ row }) => {
+      const id = row.original.id;
+      return (
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="icon-sm" aria-label="More actions">
+              …
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-48 p-2">
+            <div className="flex flex-col gap-1">
+              <Button
+                variant="ghost"
+                onClick={() => console.log(`editing ${id}`)}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => console.log(`deleting ${id}`)}
+              >
+                Delete
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
+      );
+    },
   },
 ];
