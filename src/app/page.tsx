@@ -6,7 +6,7 @@ import Link from "next/link";
 import classNames from "classnames";
 
 import AuthToggleButton from "@/components/auth-toggle-button";
-import { supabase } from "@/lib/supabaseClient";
+import { createClient as createServerSupabaseClient } from "@/utils/supabase/server";
 
 const Container = ({
   children,
@@ -21,11 +21,13 @@ const Container = ({
 };
 
 export default async function Home() {
-  const data = await supabase.auth.getUser();
+  const supabase = await createServerSupabaseClient();
 
-  console.log("USER --->>", data);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  //  console.log("USER", supabase.auth.getUser());
+  console.log("NAME-->>>", user?.user_metadata?.name);
 
   return (
     <>
