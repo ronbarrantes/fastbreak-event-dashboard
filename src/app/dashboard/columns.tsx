@@ -11,6 +11,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { SportEvent } from "@/types/types";
+import { AddEditEventDialog } from "./add-edit-event-dialog";
 export type Payment = {
   id: string;
   amount: number;
@@ -35,6 +36,7 @@ export const columns: ColumnDef<SportEvent>[] = [
     header: "Venue",
     cell: ({ row }) => {
       const venue = row.original.venue;
+
       if (!venue) return "";
       return (
         <Popover>
@@ -88,12 +90,15 @@ export const columns: ColumnDef<SportEvent>[] = [
           </PopoverTrigger>
           <PopoverContent align="end" className="w-48 p-2">
             <div className="flex flex-col gap-1">
-              <Button
-                variant="ghost"
-                onClick={() => console.log(`editing ${id}`)}
-              >
-                Edit
-              </Button>
+              <AddEditEventDialog>
+                <Button
+                  variant="ghost"
+                  onClick={() => console.log(`editing ${id}`)}
+                >
+                  Edit
+                </Button>
+              </AddEditEventDialog>
+
               <Button
                 variant="destructive"
                 onClick={() => console.log(`deleting ${id}`)}

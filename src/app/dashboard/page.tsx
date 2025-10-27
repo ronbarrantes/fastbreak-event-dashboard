@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { getEventsWithVenue } from "@/lib/actions/events";
 import { SportEvent, SportType } from "@/types/types";
+import { AddEditEventDialog } from "./add-edit-event-dialog";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 
@@ -29,7 +30,9 @@ export default async function DashboardPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="text-xl font-semibold">Events</div>
-        <Button>Create New Event</Button>
+        <AddEditEventDialog>
+          <Button>Create New Event</Button>
+        </AddEditEventDialog>
       </div>
       <DataTable columns={columns} data={data} />
     </div>
