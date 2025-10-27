@@ -28,6 +28,7 @@ export default async function Home() {
   } = await supabase.auth.getUser();
 
   console.log("NAME-->>>", user?.user_metadata?.name);
+  console.log("ID-->>>", user?.id);
 
   return (
     <>
@@ -35,7 +36,10 @@ export default async function Home() {
         <Container className="flex justify-between border border-green-500">
           <div>
             <div className="text-2xl font-semibold">Event Dashboard</div>
-            <div>a fastbreak.ai project</div>
+            <div>
+              a fastbreak.ai project{" "}
+              {user?.user_metadata?.name && `hello` + user?.user_metadata?.name}
+            </div>
           </div>
 
           <nav className="flex items-center">
