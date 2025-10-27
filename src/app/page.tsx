@@ -2,9 +2,11 @@
 import React from "react";
 
 import Link from "next/link";
-import AuthToggleButton from "@/components/auth-toggle-button";
 
 import classNames from "classnames";
+
+import AuthToggleButton from "@/components/auth-toggle-button";
+import { supabase } from "@/lib/supabaseClient";
 
 const Container = ({
   children,
@@ -19,6 +21,12 @@ const Container = ({
 };
 
 export default async function Home() {
+  const data = await supabase.auth.getUser();
+
+  console.log("USER --->>", data);
+
+  //  console.log("USER", supabase.auth.getUser());
+
   return (
     <>
       <header className="flex w-full border border-dotted border-amber-400">

@@ -13,7 +13,6 @@ export default function LoginPage() {
   const supabase = createBrowserSupabaseClient();
 
   useEffect(() => {
-    // If already signed in, skip login
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) router.replace("/dashboard");
     });

@@ -29,7 +29,7 @@ export default function AuthToggleButton() {
     load();
 
     const { data: subscription } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (_, session) => {
         if (!isActive) return;
         setIsLoggedIn(Boolean(session));
       }
@@ -44,7 +44,6 @@ export default function AuthToggleButton() {
   async function handleClick() {
     if (isLoggedIn) {
       await supabase.auth.signOut();
-      // Always land on home after logout
       if (pathname !== "/") router.replace("/");
     } else {
       router.push("/login");
@@ -53,7 +52,7 @@ export default function AuthToggleButton() {
 
   return (
     <Button variant="ghost" onClick={handleClick} disabled={isLoading}>
-      {isLoading ? "…" : isLoggedIn ? "Logout" : "Login"}
+      {isLoading ? "..." : isLoggedIn ? "Logout" : "Login"}
     </Button>
   );
 }
