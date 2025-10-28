@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import classNames from "classnames";
 import { Toaster } from "sonner";
 
+import { Header } from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
 
 import "./globals.css";
@@ -43,7 +44,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="border-cyan-500">{children}</div>
+          <div className="border-cyan-500">
+            <Header />
+            {children}
+          </div>
           <Toaster />
         </ThemeProvider>
       </body>

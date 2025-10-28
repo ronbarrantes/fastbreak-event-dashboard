@@ -7,7 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { createClient as createBrowserSupabaseClient } from "@/utils/supabase/client";
 
-export default function AuthToggleButton() {
+export const AuthToggleButton = () => {
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createBrowserSupabaseClient();
@@ -18,13 +18,13 @@ export default function AuthToggleButton() {
   useEffect(() => {
     let isActive = true;
 
-    async function load() {
+    const load = async () => {
       setIsLoading(true);
       const { data } = await supabase.auth.getSession();
       if (!isActive) return;
       setIsLoggedIn(Boolean(data.session));
       setIsLoading(false);
-    }
+    };
 
     load();
 
@@ -41,18 +41,19 @@ export default function AuthToggleButton() {
     };
   }, [supabase]);
 
-  async function handleClick() {
+  const handleClick = async () => {
     if (isLoggedIn) {
       await supabase.auth.signOut();
+      router.refresh();
       if (pathname !== "/") router.replace("/");
     } else {
       router.push("/login");
     }
-  }
+  };
 
   return (
     <Button variant="ghost" onClick={handleClick} disabled={isLoading}>
       {isLoading ? "..." : isLoggedIn ? "Logout" : "Login"}
     </Button>
   );
-}
+};
