@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { createClient as createServerSupabaseClient } from "@/utils/supabase/server";
+import { Button } from "./ui/button";
 import { AuthToggleButton } from "./auth-toggle-button";
 import { Container } from "./container";
 
@@ -13,7 +14,9 @@ export const Header = async () => {
     data: { user },
   } = await supabase.auth.getUser();
 
-  console.log("NAME-->>>", user?.user_metadata?.name);
+  console.log("USER-->>>", user);
+
+  const loginButtonTitle = user ? "Logout" : "Login";
 
   return (
     <header className="flex w-full border border-dotted border-amber-400">
@@ -32,6 +35,9 @@ export const Header = async () => {
               <Link href="/dashboard">dashboard</Link>
             </li>
           </ul>
+          <form>
+            <Button>{loginButtonTitle}</Button>
+          </form>
           <AuthToggleButton />
         </nav>
       </Container>
