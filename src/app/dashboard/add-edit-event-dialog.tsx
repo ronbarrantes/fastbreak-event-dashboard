@@ -1,8 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -17,62 +16,90 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { SportEvent } from "@/types/types";
-import { tryCatch } from "@/utils/try-catch";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { SPORTS, SportEvent, SportType, VenueOption } from "@/types/types";
 
-const eventSchema = z.object({
-  title: z.string().min(2, {
-    message: "Title least 2 characters.",
+const eventFormSchema = z.object({
+  name: z.string().min(3, { message: "Name must be at least 3 characters." }),
+  sportType: z.custom<SportType>((val) => typeof val === "string" && (SPORTS as readonly string[]).includes(val), {
+    message: "Select a valid sport type.",
   }),
-
-  desc: z.string().min(2, {
-    message: "Description must be at least 2 characters.",
-  }),
-
-  name: z.string().min(3, {
-    message: "Name must be at least 3 characters.",
-  }),
-
-  sportType: z.string(),
-
-  date: z.date().nullish(),
-
-  description: z.string().min(2, {
-    message: "Description must be at least 2 characters.",
-  }),
-
-  venue: z.object({
-    name: z.string(),
-    id: z.uuid(),
-  }),
+  startDate: z
+    .string()
+    .min(1, { message: "Start date is required." })
+    .refine((v) => !Number.isNaN(Date.parse(v)), { message: "Invalid start date/time." }),
+  endDate: z
+    .string()
+    .min(1, { message: "End date is required." })
+    .refine((v) => !Number.isNaN(Date.parse(v)), { message: "Invalid end date/time." }),
+  description: z.string().min(2, { message: "Description must be at least 2 characters." }),
+  venueId: z.string().uuid({ message: "Select a venue." }),
 });
+
+type EventFormValues = z.infer<typeof eventFormSchema>;
+
+function toLocalDateTimeInputValue(date: Date) {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const yyyy = date.getFullYear();
+  const mm = pad(date.getMonth() + 1);
+  const dd = pad(date.getDate());
+  const hh = pad(date.getHours());
+  const mi = pad(date.getMinutes());
+  return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+}
 
 export const AddEditEventDialog = ({
   children,
   sportEvent,
+  venues,
 }: {
   children: React.ReactNode;
   sportEvent?: SportEvent;
+  venues: VenueOption[];
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const form = useForm<z.infer<typeof eventSchema>>({
-    resolver: zodResolver(eventSchema),
+  const defaultDateString = useMemo(() => toLocalDateTimeInputValue(new Date()), []);
+
+  const form = useForm<EventFormValues>({
+    resolver: zodResolver(eventFormSchema),
     defaultValues: {
       name: sportEvent?.name ?? "",
-      sportType: sportEvent?.sportType ?? "",
-      date: sportEvent?.date ?? "",
+      sportType: (sportEvent?.sportType as SportType) ?? ("soccer" as SportType),
+      startDate: sportEvent?.date ? toLocalDateTimeInputValue(new Date(sportEvent.date)) : defaultDateString,
+      endDate: sportEvent?.date ? toLocalDateTimeInputValue(new Date(sportEvent.date)) : defaultDateString,
       description: sportEvent?.description ?? "",
-      venue: sportEvent?.venue ?? null,
+      venueId: "",
     },
   });
 
   const dialogTitle = sportEvent ? "Edit event" : "Add event";
 
-  const handleSubmit = () => {};
+  const onSubmit = (values: EventFormValues) => {
+    // Wire up to your API/server action here
+    // This keeps the UI and validation fully functional.
+    // Example payload shape expected by the DB layer
+    const payload = {
+      eventName: values.name,
+      sportType: values.sportType,
+      description: values.description,
+      startDate: new Date(values.startDate),
+      endDate: new Date(values.endDate),
+      venueId: values.venueId,
+    };
+    // eslint-disable-next-line no-console
+    console.log("submit event payload", payload);
+    setIsOpen(false);
+  };
 
   return (
     <Dialog onOpenChange={setIsOpen} open={isOpen}>
@@ -80,59 +107,57 @@ export const AddEditEventDialog = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{dialogTitle}</DialogTitle>
-          <DialogDescription>
-            This action cannot be undone. This will delet the Now Item with
-            title of:
-          </DialogDescription>
-          <DialogDescription className="font-semibold">
-            Add or edit event
-          </DialogDescription>
+          <DialogDescription>Fill in the event details below.</DialogDescription>
         </DialogHeader>
-        <Button
-          type="button"
-          variant="destructive"
-          onClick={async () => {
-            const { error } = await tryCatch();
-            // api.now.delete.mutateAsync(item.id)
-
-            if (error) {
-              setIsOpen(true);
-              return;
-            }
-            setIsOpen(false);
-          }}
-        ></Button>
-        <DialogClose asChild>
-          <Button type="button">Close</Button>
-        </DialogClose>
 
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex h-full flex-col space-y-8"
-          >
-            {id ? (
-              <DialogHeader>
-                <DialogTitle>Update the now item</SheetTitle>
-                <DialogDescription>What is your update:</SheetDescription>
-              </DialogHeader>
-            ) : (
-              <DialogHeader>
-                <DialogTitle>Add a now item</SheetTitle>
-                <DialogDescription>
-                  What am you up to right now:
-                </DialogDescription>
-              </DialogHeader>
-            )}
-            <div className="flex flex-1 auto-rows-min flex-col gap-6 px-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Event name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Event name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="sportType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sport type</FormLabel>
+                  <FormControl>
+                    <select
+                      {...field}
+                      className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs focus:outline-hidden focus:ring-2 focus:ring-ring"
+                    >
+                      {(SPORTS as readonly string[]).map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <FormField
                 control={form.control}
-                name="title"
+                name="startDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title</FormLabel>
+                    <FormLabel>Start date</FormLabel>
                     <FormControl>
-                      <Input placeholder="title..." {...field} />
+                      <Input type="datetime-local" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -140,12 +165,12 @@ export const AddEditEventDialog = ({
               />
               <FormField
                 control={form.control}
-                name="desc"
+                name="endDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>End date</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="description..." {...field} />
+                      <Input type="datetime-local" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -153,12 +178,54 @@ export const AddEditEventDialog = ({
               />
             </div>
 
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Short description" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="venueId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Venue</FormLabel>
+                  <FormControl>
+                    <select
+                      {...field}
+                      className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs focus:outline-hidden focus:ring-2 focus:ring-ring"
+                    >
+                      <option value="" disabled>
+                        Select a venue
+                      </option>
+                      {venues.map((v) => (
+                        <option key={v.id} value={v.id}>
+                          {v.name}
+                        </option>
+                      ))}
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <DialogFooter>
               <DialogClose asChild>
-                <Button type="submit">Save changes</Button>
+                <Button type="submit">Save</Button>
               </DialogClose>
               <DialogClose asChild>
-                <Button variant="outline">Close</Button>
+                <Button variant="outline" type="button">
+                  Cancel
+                </Button>
               </DialogClose>
             </DialogFooter>
           </form>

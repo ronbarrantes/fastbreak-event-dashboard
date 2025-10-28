@@ -1,4 +1,4 @@
-type sports = [
+export const SPORTS = [
   "soccer",
   "basketball",
   "baseball",
@@ -25,7 +25,7 @@ type sports = [
   "triathlon",
   "gymnastics",
   "surfing",
-];
+] as const;
 
 export type Venue = {
   name: string;
@@ -44,4 +44,9 @@ export type SportEvent = {
   venue?: Venue;
 };
 
-export type SportType = sports[number];
+export type SportType = (typeof SPORTS)[number];
+
+export type VenueOption = {
+  id: string;
+  name: string;
+};
