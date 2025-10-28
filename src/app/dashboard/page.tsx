@@ -1,14 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { getEventsWithVenue } from "@/lib/actions/events";
-import { SportEvent, SportType } from "@/types/types";
+import { getVenues } from "@/lib/actions/venues";
+import { SportEvent, SportType, VenueOption } from "@/types/types";
 import { AddEditEventDialog } from "./add-edit-event-dialog";
-import { columns } from "./columns";
+import { createColumns } from "./columns";
 import { DataTable } from "./data-table";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const rows = await getEventsWithVenue();
+  const [rows, venuesRows] = await Promise.all([getEventsWithVenue(), getVenues()]);
 
   const data: SportEvent[] = rows.map(({ event, venue }) => ({
     id: event.id,
@@ -26,15 +27,16 @@ export default async function DashboardPage() {
         }
       : undefined,
   }));
+  const venueOptions: VenueOption[] = venuesRows.map((v) => ({ id: v.id, name: v.name }));
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="text-xl font-semibold">Events</div>
-        <AddEditEventDialog>
+        <AddEditEventDialog venues={venueOptions}>
           <Button>Create New Event</Button>
         </AddEditEventDialog>
       </div>
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={createColumns(venueOptions)} data={data} />
     </div>
   );
 }
