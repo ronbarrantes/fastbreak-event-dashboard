@@ -1,37 +1,22 @@
-"use client";
-import { useEffect } from "react";
+import { redirect } from "next/navigation";
 
-import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { signInWithGoogle } from "@/lib/actions/auth";
+import { createClient as createServerSupabaseClient } from "@/utils/supabase/server";
 
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
+export default async function LoginPage() {
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-import { createClient as createBrowserSupabaseClient } from "@/utils/supabase/client";
-
-export default function LoginPage() {
-  const router = useRouter();
-  const supabase = createBrowserSupabaseClient();
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) router.replace("/dashboard");
-    });
-
-    const { data: listener } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN") router.replace("/dashboard");
-    });
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
-  }, [router, supabase]);
+  if (user) redirect("/dashboard");
 
   return (
-    <Auth
-      supabaseClient={supabase}
-      appearance={{ theme: ThemeSupa }}
-      providers={["google"]}
-      onlyThirdPartyProviders
-    />
+    <div className="flex min-h-[60vh] items-center justify-center">
+      <form action={signInWithGoogle}>
+        <Button type="submit">Continue with Google</Button>
+      </form>
+    </div>
   );
 }

@@ -5,7 +5,8 @@ import Link from "next/link";
 
 import classNames from "classnames";
 
-import AuthToggleButton from "@/components/auth-toggle-button";
+import { Button } from "@/components/ui/button";
+import { signInWithGoogle, signOut } from "@/lib/actions/auth";
 import { createClient as createServerSupabaseClient } from "@/utils/supabase/server";
 
 const Container = ({
@@ -47,7 +48,11 @@ export default async function Home() {
                 <Link href="/dashboard">dashboard</Link>
               </li>
             </ul>
-            <AuthToggleButton />
+            <form action={user ? signOut : signInWithGoogle}>
+              <Button variant="ghost" type="submit">
+                {user ? "Logout" : "Login"}
+              </Button>
+            </form>
           </nav>
         </Container>
       </header>
