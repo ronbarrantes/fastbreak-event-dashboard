@@ -17,11 +17,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { SportEvent } from "@/types/types";
 import { tryCatch } from "@/utils/try-catch";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 
 const eventSchema = z.object({
   title: z.string().min(2, {
@@ -105,64 +112,6 @@ export const AddEditEventDialog = ({
         <DialogClose asChild>
           <Button type="button">Close</Button>
         </DialogClose>
-
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex h-full flex-col space-y-8"
-          >
-            {id ? (
-              <DialogHeader>
-                <DialogTitle>Update the now item</SheetTitle>
-                <DialogDescription>What is your update:</SheetDescription>
-              </DialogHeader>
-            ) : (
-              <DialogHeader>
-                <DialogTitle>Add a now item</SheetTitle>
-                <DialogDescription>
-                  What am you up to right now:
-                </DialogDescription>
-              </DialogHeader>
-            )}
-            <div className="flex flex-1 auto-rows-min flex-col gap-6 px-4">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input placeholder="title..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="desc"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="description..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button type="submit">Save changes</Button>
-              </DialogClose>
-              <DialogClose asChild>
-                <Button variant="outline">Close</Button>
-              </DialogClose>
-            </DialogFooter>
-          </form>
-        </Form>
       </DialogContent>
     </Dialog>
   );

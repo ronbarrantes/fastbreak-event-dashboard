@@ -1,6 +1,7 @@
+"use server";
 import classNames from "classnames";
 
-export const Container = ({
+export const Container = async ({
   children,
   className,
 }: {
