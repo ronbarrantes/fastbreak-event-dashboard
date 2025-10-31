@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { devtools } from "zustand/middleware";
+import { devtools, persist } from "zustand/middleware";
 
 type ViewType = "grid" | "table";
 
@@ -15,11 +15,15 @@ export type ViewStore = ViewActions & ViewState;
 
 export const useViewStore = create<ViewStore>()(
   devtools(
-    (set) => ({
-      viewType: "table",
-      setViewType: (viewType) => set({ viewType }),
-    }),
+    persist(
+      (set) => ({
+        viewType: "table",
+        setViewType: (viewType) => set({ viewType }),
+      }),
+      {
+        name: "view-preference-storage",
+      }
+    ),
     { name: "VIEW_STORE" }
   )
 );
-

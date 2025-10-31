@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/popover";
 import { SportEvent } from "@/types/types";
 import { AddEditEventDialog } from "./add-edit-event-dialog";
+import { DeleteEventDialog } from "./delete-event-dialog";
 
 export function EventCards({ events }: { events: SportEvent[] }) {
   if (events.length === 0) {
@@ -51,12 +52,17 @@ export function EventCards({ events }: { events: SportEvent[] }) {
                         Edit
                       </Button>
                     </AddEditEventDialog>
-                    <Button
-                      variant="destructive"
-                      onClick={() => console.log(`deleting ${event.id}`)}
+                    <DeleteEventDialog
+                      eventId={event.id}
+                      eventName={event.name}
                     >
-                      Delete
-                    </Button>
+                      <Button
+                        variant="destructive"
+                        className="w-full justify-start"
+                      >
+                        Delete
+                      </Button>
+                    </DeleteEventDialog>
                   </div>
                 </PopoverContent>
               </Popover>

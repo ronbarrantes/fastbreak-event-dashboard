@@ -1,7 +1,6 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import classNames from "classnames";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,7 @@ import {
 } from "@/components/ui/popover";
 import { SportEvent } from "@/types/types";
 import { AddEditEventDialog } from "./add-edit-event-dialog";
+import { DeleteEventDialog } from "./delete-event-dialog";
 
 export const columns: ColumnDef<SportEvent>[] = [
   { accessorKey: "name", header: "Event Name" },
@@ -84,7 +84,7 @@ export const columns: ColumnDef<SportEvent>[] = [
     id: "actions",
     header: "",
     cell: ({ row }) => {
-      const id = row.original.id;
+      const event = row.original;
       return (
         <Popover>
           <PopoverTrigger asChild>
@@ -100,19 +100,18 @@ export const columns: ColumnDef<SportEvent>[] = [
               <AddEditEventDialog>
                 <Button
                   variant="ghost"
-                  onClick={() => console.log(`editing ${id}`)}
+                  onClick={() => console.log(`editing ${event.id}`)}
                   className="text-white hover:bg-slate-800 hover:text-white"
                 >
                   Edit
                 </Button>
               </AddEditEventDialog>
 
-              <Button
-                variant="destructive"
-                onClick={() => console.log(`deleting ${id}`)}
-              >
-                Delete
-              </Button>
+              <DeleteEventDialog eventId={event.id} eventName={event.name}>
+                <Button variant="destructive" className="w-full justify-start">
+                  Delete
+                </Button>
+              </DeleteEventDialog>
             </div>
           </PopoverContent>
         </Popover>
