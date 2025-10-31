@@ -3,13 +3,12 @@ import { AiOutlineClose, AiOutlineWarning } from "react-icons/ai";
 import { BsChevronLeft } from "react-icons/bs";
 import { FaLink, FaRegFileAlt } from "react-icons/fa";
 import { FiCalendar, FiClock, FiHome } from "react-icons/fi";
+import { BsGrid, BsTable } from "react-icons/bs";
 import { GiHamburgerMenu } from "react-icons/gi";
 import {
   LuSettings,
   LuPlus,
   LuTrash2,
-  LuLayoutGrid,
-  LuLayoutList,
   LuLogIn,
   LuLogOut,
 } from "react-icons/lu";
@@ -48,8 +47,8 @@ export const iconFileNames = {
   add: { icon: MdAdd },
   edit: { icon: MdEdit },
   delete: { icon: LuTrash2 },
-  grid: { icon: LuLayoutGrid },
-  table: { icon: LuLayoutList },
+  grid: { icon: BsGrid },
+  table: { icon: BsTable },
   login: { icon: LuLogIn },
   logout: { icon: LuLogOut },
 };
