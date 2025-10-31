@@ -44,10 +44,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="border-cyan-500">
-            <Header />
-            {children}
-          </div>
+          <Header />
+          {children}
           <Toaster />
         </ThemeProvider>
       </body>

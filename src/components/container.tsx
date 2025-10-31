@@ -9,6 +9,8 @@ export const Container = async ({
   className?: string;
 }) => {
   return (
-    <div className={classNames("container m-auto", className)}>{children}</div>
+    <div className={classNames("container m-auto px-2 sm:px-0", className)}>
+      {children}
+    </div>
   );
 };
