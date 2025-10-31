@@ -1,31 +1,32 @@
-// eslint-disable-next-line simple-import-sort/imports
 import { AiOutlineClose, AiOutlineWarning } from "react-icons/ai";
 import { BsChevronLeft } from "react-icons/bs";
+import { BsGrid, BsTable } from "react-icons/bs";
 import { FaLink, FaRegFileAlt } from "react-icons/fa";
 import { FiCalendar, FiClock, FiHome } from "react-icons/fi";
-import { BsGrid, BsTable } from "react-icons/bs";
 import { GiHamburgerMenu } from "react-icons/gi";
 import {
-  LuSettings,
-  LuPlus,
-  LuTrash2,
   LuLogIn,
   LuLogOut,
+  LuPlus,
+  LuSettings,
+  LuTrash2,
 } from "react-icons/lu";
 import {
+  MdAdd,
+  MdArrowForward,
   MdBlock,
-  MdEdit,
   MdCheck,
   MdChevronRight,
   MdCircle,
+  MdEdit,
   MdOutlineInfo,
   MdRefresh,
   MdRemove,
-  MdAdd,
 } from "react-icons/md";
 
 export const iconFileNames = {
   about: { icon: MdOutlineInfo },
+  arrow: { icon: MdArrowForward },
   calendar: { icon: FiCalendar },
   check: { icon: MdCheck },
   chevron: { icon: MdChevronRight },
