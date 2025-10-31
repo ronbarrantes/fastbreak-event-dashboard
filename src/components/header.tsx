@@ -42,8 +42,7 @@ export const Header = async () => {
           <div className="flex items-center justify-end gap-4">
             {user?.user_metadata?.name ? (
               <span className="hidden text-sm text-slate-400 sm:inline">
-                Hi,{" "}
-                <span className="text-white">{user.user_metadata.name}</span>
+                Hi <span className="text-white">{user.user_metadata.name}</span>
               </span>
             ) : null}
             <AuthToggleButton />
