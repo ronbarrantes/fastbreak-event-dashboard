@@ -16,3 +16,5 @@ export type SportEvent = {
   description: string;
   venue?: Venue;
 };
+
+export type { SportType };
