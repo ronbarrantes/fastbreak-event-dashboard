@@ -1,31 +1,4 @@
-type sports = [
-  "soccer",
-  "basketball",
-  "baseball",
-  "football",
-  "rugby",
-  "cricket",
-  "tennis",
-  "table tennis",
-  "badminton",
-  "squash",
-  "volleyball",
-  "beach volleyball",
-  "handball",
-  "field hockey",
-  "ice hockey",
-  "golf",
-  "boxing",
-  "wrestling",
-  "swimming",
-  "diving",
-  "water polo",
-  "rowing",
-  "mountain biking",
-  "triathlon",
-  "gymnastics",
-  "surfing",
-];
+import { SportType } from "@/constants/sports";
 
 export type Venue = {
   name: string;
@@ -43,5 +16,3 @@ export type SportEvent = {
   description: string;
   venue?: Venue;
 };
-
-export type SportType = sports[number];

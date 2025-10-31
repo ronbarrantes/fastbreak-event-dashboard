@@ -28,38 +28,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { sports } from "@/constants/sports";
 import { createEvent } from "@/lib/actions/events";
 import { getVenues } from "@/lib/actions/venues";
-import { SportEvent, SportType } from "@/types/types";
-
-const sportTypes: SportType[] = [
-  "soccer",
-  "basketball",
-  "baseball",
-  "football",
-  "rugby",
-  "cricket",
-  "tennis",
-  "table tennis",
-  "badminton",
-  "squash",
-  "volleyball",
-  "beach volleyball",
-  "handball",
-  "field hockey",
-  "ice hockey",
-  "golf",
-  "boxing",
-  "wrestling",
-  "swimming",
-  "diving",
-  "water polo",
-  "rowing",
-  "mountain biking",
-  "triathlon",
-  "gymnastics",
-  "surfing",
-];
+import { SportEvent } from "@/types/types";
 
 const eventSchema = z
   .object({
@@ -72,7 +44,7 @@ const eventSchema = z
     description: z.string().min(2, {
       message: "Description must be at least 2 characters.",
     }),
-    venueId: z.string().uuid({
+    venueId: z.uuid({
       message: "Please select a venue.",
     }),
     startDate: z.string().min(1, {
@@ -240,7 +212,7 @@ export const AddEditEventDialog = ({
                       className="ring-offset-background flex h-10 w-full rounded-md border border-slate-700 bg-slate-800/50 px-3 py-2 text-sm text-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <option value="">Select sport type</option>
-                      {sportTypes.map((sport) => (
+                      {sports.map((sport) => (
                         <option key={sport} value={sport}>
                           {sport}
                         </option>

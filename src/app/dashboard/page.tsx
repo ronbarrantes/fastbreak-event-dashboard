@@ -27,9 +27,10 @@ export default async function DashboardPage() {
         }
       : undefined,
   }));
+
   return (
     <Container className="py-20">
-      <header className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex items-center justify-between">
         <h1 className="text-3xl font-bold text-white md:text-4xl">Events</h1>
         <div className="flex items-center gap-4">
           <ViewToggle />
@@ -39,7 +40,7 @@ export default async function DashboardPage() {
             </Button>
           </AddEditEventDialog>
         </div>
-      </header>
+      </div>
       <EventsView events={data} />
     </Container>
   );
