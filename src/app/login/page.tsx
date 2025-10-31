@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { createClient as createBrowserSupabaseClient } from "@/utils/supabase/client";
 
 export default function LoginPage() {
@@ -27,11 +28,21 @@ export default function LoginPage() {
   }, [router, supabase]);
 
   return (
-    <Auth
-      supabaseClient={supabase}
-      appearance={{ theme: ThemeSupa }}
-      providers={["google"]}
-      onlyThirdPartyProviders
-    />
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-8">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">Welcome</CardTitle>
+          <CardDescription>Sign in to access your event dashboard</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Auth
+            supabaseClient={supabase}
+            appearance={{ theme: ThemeSupa }}
+            providers={["google"]}
+            onlyThirdPartyProviders
+          />
+        </CardContent>
+      </Card>
+    </div>
   );
 }

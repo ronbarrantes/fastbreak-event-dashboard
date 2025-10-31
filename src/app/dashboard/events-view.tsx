@@ -1,11 +1,11 @@
 "use client";
 
-import { SportEvent } from "@/types/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { useViewStore } from "@/state/view-store";
+import { SportEvent } from "@/types/types";
+import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { EventCards } from "./event-cards";
-import { columns } from "./columns";
 
 export function EventsView({ events }: { events: SportEvent[] }) {
   const { viewType } = useViewStore();
@@ -22,4 +22,3 @@ export function EventsView({ events }: { events: SportEvent[] }) {
     </Card>
   );
 }
-

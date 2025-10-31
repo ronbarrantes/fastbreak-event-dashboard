@@ -34,7 +34,7 @@ export const columns: ColumnDef<SportEvent>[] = [
       if (!venue) return "";
       return (
         <Popover>
-          <PopoverTrigger className="text-cyan-400 underline underline-offset-2 hover:text-cyan-300 transition-colors">
+          <PopoverTrigger className="text-cyan-400 underline underline-offset-2 transition-colors hover:text-cyan-300">
             {venue.name}
           </PopoverTrigger>
           <PopoverContent
@@ -46,7 +46,7 @@ export const columns: ColumnDef<SportEvent>[] = [
                 {venue.name}
               </div>
               {venue.description ? (
-                <p className="text-slate-400 text-sm">{venue.description}</p>
+                <p className="text-sm text-slate-400">{venue.description}</p>
               ) : null}
               <div className="grid grid-cols-2 gap-2 text-sm">
                 {typeof venue.capacity === "number" ? (
@@ -58,13 +58,13 @@ export const columns: ColumnDef<SportEvent>[] = [
                 {venue.amenities ? (
                   <div className="col-span-2 space-y-2">
                     <span className="font-medium text-white">Amenities:</span>{" "}
-                    <div className="flex flex-wrap gap-2 mt-1">
+                    <div className="mt-1 flex flex-wrap gap-2">
                       {venue.amenities.split(",").map((amenity) => {
                         const trimmed = amenity.trim();
                         return (
                           <Badge
                             key={`${row.id}--${trimmed}`}
-                            className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30"
+                            className="border-cyan-500/30 bg-cyan-500/20 text-cyan-400"
                           >
                             {trimmed}
                           </Badge>
@@ -94,7 +94,7 @@ export const columns: ColumnDef<SportEvent>[] = [
           </PopoverTrigger>
           <PopoverContent
             align="end"
-            className="w-48 p-2 border-slate-700 bg-slate-900/95 backdrop-blur"
+            className="w-48 border-slate-700 bg-slate-900/95 p-2 backdrop-blur"
           >
             <div className="flex flex-col gap-1">
               <AddEditEventDialog>

@@ -32,9 +32,8 @@ export function ViewToggle() {
         }
         aria-label="Grid view"
       >
-        Grid
+        Card
       </Button>
     </div>
   );
 }
-
