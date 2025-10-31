@@ -34,33 +34,43 @@ export const columns: ColumnDef<SportEvent>[] = [
       if (!venue) return "";
       return (
         <Popover>
-          <PopoverTrigger className="text-primary underline underline-offset-2 hover:opacity-80">
+          <PopoverTrigger className="text-cyan-400 underline underline-offset-2 hover:text-cyan-300 transition-colors">
             {venue.name}
           </PopoverTrigger>
-          <PopoverContent align="start" className="w-80">
-            <div className="space-y-2">
-              <div className="text-sm font-semibold">{venue.name}</div>
+          <PopoverContent
+            align="start"
+            className="w-80 border-slate-700 bg-slate-900/95 backdrop-blur"
+          >
+            <div className="space-y-3">
+              <div className="text-sm font-semibold text-white">
+                {venue.name}
+              </div>
               {venue.description ? (
-                <p className="text-muted-foreground text-sm">
-                  {venue.description}
-                </p>
+                <p className="text-slate-400 text-sm">{venue.description}</p>
               ) : null}
               <div className="grid grid-cols-2 gap-2 text-sm">
                 {typeof venue.capacity === "number" ? (
-                  <div>
-                    <span className="font-medium">Capacity:</span>{" "}
+                  <div className="text-slate-300">
+                    <span className="font-medium text-white">Capacity:</span>{" "}
                     {venue.capacity}
                   </div>
                 ) : null}
                 {venue.amenities ? (
-                  <div className="col-span-2">
-                    <span className="font-medium">Amenities:</span>{" "}
-                    {venue.amenities.split(",").map((amenity) => {
-                      const trimmed = amenity.trim();
-                      return (
-                        <Badge key={`${row.id}--${trimmed}`}>{trimmed}</Badge>
-                      );
-                    })}
+                  <div className="col-span-2 space-y-2">
+                    <span className="font-medium text-white">Amenities:</span>{" "}
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {venue.amenities.split(",").map((amenity) => {
+                        const trimmed = amenity.trim();
+                        return (
+                          <Badge
+                            key={`${row.id}--${trimmed}`}
+                            className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30"
+                          >
+                            {trimmed}
+                          </Badge>
+                        );
+                      })}
+                    </div>
                   </div>
                 ) : null}
               </div>
@@ -82,12 +92,16 @@ export const columns: ColumnDef<SportEvent>[] = [
               …
             </Button>
           </PopoverTrigger>
-          <PopoverContent align="end" className="w-48 p-2">
+          <PopoverContent
+            align="end"
+            className="w-48 p-2 border-slate-700 bg-slate-900/95 backdrop-blur"
+          >
             <div className="flex flex-col gap-1">
               <AddEditEventDialog>
                 <Button
                   variant="ghost"
                   onClick={() => console.log(`editing ${id}`)}
+                  className="text-white hover:bg-slate-800 hover:text-white"
                 >
                   Edit
                 </Button>
