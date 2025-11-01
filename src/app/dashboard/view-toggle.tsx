@@ -1,5 +1,6 @@
 "use client";
 
+import { Icon } from "@/components/icon";
 import { Button } from "@/components/ui/button";
 import { useViewStore } from "@/state/view-store";
 
@@ -19,7 +20,7 @@ export function ViewToggle() {
         }
         aria-label="Table view"
       >
-        Table
+        <Icon name="table" /> Table
       </Button>
       <Button
         variant={viewType === "grid" ? "default" : "outline"}
@@ -32,7 +33,7 @@ export function ViewToggle() {
         }
         aria-label="Grid view"
       >
-        Card
+        <Icon name="grid" /> Grid
       </Button>
     </div>
   );

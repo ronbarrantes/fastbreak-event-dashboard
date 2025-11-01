@@ -27,6 +27,7 @@ export default async function DashboardPage() {
         }
       : undefined,
   }));
+
   return (
     <Container className="py-20">
       <header className="mb-8 flex items-center justify-between">
