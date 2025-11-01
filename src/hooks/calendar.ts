@@ -33,6 +33,7 @@ interface UseDateTimePickerReturn {
   getCurrentTime15Min: () => string;
   getStartDateTime: () => string;
   getEndDateTime: () => string;
+  getToday: () => Date;
 
   // Validation helpers for calendar props
   isStartDateDisabled: (date: Date) => boolean;
@@ -49,16 +50,10 @@ interface UseDateTimePickerReturn {
 export function useDateTimePicker<T extends FieldValues>({
   form,
 }: UseDateTimePickerOptions<T>): UseDateTimePickerReturn {
-  const [startDateOpen, setStartDateOpen] = useState(false);
-  const [endDateOpen, setEndDateOpen] = useState(false);
-  const [startDateSelected, setStartDateSelectedRaw] = useState<
-    Date | undefined
-  >(undefined);
-  const [endDateSelected, setEndDateSelectedRaw] = useState<Date | undefined>(
-    undefined
-  );
-  const [startTime, setStartTimeRaw] = useState("10:00");
-  const [endTime, setEndTimeRaw] = useState("11:00");
+  // Get today's date
+  const getToday = useCallback(() => {
+    return dayjs().startOf("day").toDate();
+  }, []);
 
   // Get current time rounded to nearest 15 minutes
   const getCurrentTime15Min = useCallback(() => {
@@ -68,6 +63,56 @@ export function useDateTimePicker<T extends FieldValues>({
     const time = now.minute(roundedMinutes).second(0).millisecond(0);
     return time.format("HH:mm");
   }, []);
+
+  // Get default start time (current time rounded to next 15 min)
+  const getDefaultStartTime = useCallback(() => {
+    return getCurrentTime15Min();
+  }, [getCurrentTime15Min]);
+
+  // Get default end time (1 hour after start time)
+  const getDefaultEndTime = useCallback((startTime: string) => {
+    const [hours, minutes] = startTime.split(":");
+    const totalMinutes = parseInt(hours) * 60 + parseInt(minutes);
+    const endTotalMinutes = totalMinutes + 60; // Add 1 hour
+    // Handle wrap-around past midnight
+    const clampedMinutes = endTotalMinutes % 1440;
+    const endHours = Math.floor(clampedMinutes / 60);
+    const endMins = clampedMinutes % 60;
+    return `${String(endHours).padStart(2, "0")}:${String(endMins).padStart(2, "0")}`;
+  }, []);
+
+  // Initialize default times once
+  const getInitialDefaultStartTime = () => {
+    const now = dayjs();
+    const minutes = now.minute();
+    const roundedMinutes = Math.ceil(minutes / 15) * 15;
+    const time = now.minute(roundedMinutes).second(0).millisecond(0);
+    return time.format("HH:mm");
+  };
+
+  const getInitialDefaultEndTime = (startTime: string) => {
+    const [hours, minutes] = startTime.split(":");
+    const totalMinutes = parseInt(hours) * 60 + parseInt(minutes);
+    const endTotalMinutes = totalMinutes + 60;
+    const clampedMinutes = endTotalMinutes % 1440;
+    const endHours = Math.floor(clampedMinutes / 60);
+    const endMins = clampedMinutes % 60;
+    return `${String(endHours).padStart(2, "0")}:${String(endMins).padStart(2, "0")}`;
+  };
+
+  const defaultStartTime = getInitialDefaultStartTime();
+  const defaultEndTime = getInitialDefaultEndTime(defaultStartTime);
+
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [endDateOpen, setEndDateOpen] = useState(false);
+  const [startDateSelected, setStartDateSelectedRaw] = useState<
+    Date | undefined
+  >(undefined);
+  const [endDateSelected, setEndDateSelectedRaw] = useState<Date | undefined>(
+    undefined
+  );
+  const [startTime, setStartTimeRaw] = useState(defaultStartTime);
+  const [endTime, setEndTimeRaw] = useState(defaultEndTime);
 
   // Combine date and time into a datetime string
   const combineDateTime = useCallback(
@@ -105,10 +150,10 @@ export function useDateTimePicker<T extends FieldValues>({
         dayjs(endDateSelected).isBefore(dayjs(date), "day")
       ) {
         setEndDateSelectedRaw(undefined);
-        setEndTimeRaw("11:00");
+        setEndTimeRaw(getDefaultEndTime(startTime));
       }
     },
-    [endDateSelected]
+    [endDateSelected, startTime, getDefaultEndTime]
   );
 
   const setStartTime = useCallback(
@@ -208,11 +253,13 @@ export function useDateTimePicker<T extends FieldValues>({
 
   // Reset function
   const reset = useCallback(() => {
+    const defaultStart = getDefaultStartTime();
+    const defaultEnd = getDefaultEndTime(defaultStart);
     setStartDateSelectedRaw(undefined);
     setEndDateSelectedRaw(undefined);
-    setStartTimeRaw("10:00");
-    setEndTimeRaw("11:00");
-  }, []);
+    setStartTimeRaw(defaultStart);
+    setEndTimeRaw(defaultEnd);
+  }, [getDefaultStartTime, getDefaultEndTime]);
 
   return {
     // State
@@ -232,6 +279,7 @@ export function useDateTimePicker<T extends FieldValues>({
     getCurrentTime15Min,
     getStartDateTime,
     getEndDateTime,
+    getToday,
     // Validation
     isStartDateDisabled,
     isEndDateDisabled,

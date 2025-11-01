@@ -102,27 +102,7 @@ export const AddEditEventDialog = ({
   });
 
   // Use the date/time picker hook
-  const {
-    startDateOpen,
-    setStartDateOpen,
-    endDateOpen,
-    setEndDateOpen,
-    startDateSelected,
-    setStartDateSelected,
-    endDateSelected,
-    setEndDateSelected,
-    startTime,
-    setStartTime,
-    endTime,
-    setEndTime,
-    getStartDateTime,
-    getEndDateTime,
-    isStartDateDisabled,
-    isEndDateDisabled,
-    getMinStartTime,
-    getMinEndTime,
-    reset: resetDateTime,
-  } = useDateTimePicker<z.infer<typeof eventSchema>>({ form });
+  const cal = useDateTimePicker<z.infer<typeof eventSchema>>({ form });
 
   useEffect(() => {
     const loadVenues = async () => {
@@ -139,8 +119,8 @@ export const AddEditEventDialog = ({
   const handleSubmit = async (values: z.infer<typeof eventSchema>) => {
     setIsLoading(true);
 
-    const startDateTime = getStartDateTime();
-    const endDateTime = getEndDateTime();
+    const startDateTime = cal.getStartDateTime();
+    const endDateTime = cal.getEndDateTime();
 
     const result = await tryCatch(
       createEvent(
@@ -166,7 +146,7 @@ export const AddEditEventDialog = ({
       toast.success("Event created successfully!");
       setIsOpen(false);
       form.reset();
-      resetDateTime();
+      cal.reset();
       router.refresh();
     }
 
@@ -285,16 +265,16 @@ export const AddEditEventDialog = ({
                     <FormControl>
                       <div className="flex flex-col gap-3">
                         <Popover
-                          open={startDateOpen}
-                          onOpenChange={setStartDateOpen}
+                          open={cal.startDateOpen}
+                          onOpenChange={cal.setStartDateOpen}
                         >
                           <PopoverTrigger asChild>
                             <Button
                               variant="outline"
                               className="w-full justify-between border-slate-700 bg-slate-800/50 font-normal text-white"
                             >
-                              {startDateSelected
-                                ? startDateSelected.toLocaleDateString()
+                              {cal.startDateSelected
+                                ? cal.startDateSelected.toLocaleDateString()
                                 : "Select date"}
                               <ChevronDownIcon />
                             </Button>
@@ -305,23 +285,26 @@ export const AddEditEventDialog = ({
                           >
                             <Calendar
                               mode="single"
-                              selected={startDateSelected}
+                              selected={cal.startDateSelected}
+                              defaultMonth={
+                                cal.startDateSelected || cal.getToday()
+                              }
                               captionLayout="dropdown"
-                              disabled={isStartDateDisabled}
+                              disabled={cal.isStartDateDisabled}
                               onSelect={(date) => {
-                                setStartDateSelected(date);
-                                setStartDateOpen(false);
+                                cal.setStartDateSelected(date);
+                                cal.setStartDateOpen(false);
                               }}
                             />
                           </PopoverContent>
                         </Popover>
                         <Input
                           type="time"
-                          value={startTime}
-                          onChange={(e) => setStartTime(e.target.value)}
+                          value={cal.startTime}
+                          onChange={(e) => cal.setStartTime(e.target.value)}
                           className="border-slate-700 bg-slate-800/50 text-white"
                           step="900"
-                          min={getMinStartTime()}
+                          min={cal.getMinStartTime()}
                         />
                       </div>
                     </FormControl>
@@ -339,16 +322,16 @@ export const AddEditEventDialog = ({
                     <FormControl>
                       <div className="flex flex-col gap-3">
                         <Popover
-                          open={endDateOpen}
-                          onOpenChange={setEndDateOpen}
+                          open={cal.endDateOpen}
+                          onOpenChange={cal.setEndDateOpen}
                         >
                           <PopoverTrigger asChild>
                             <Button
                               variant="outline"
                               className="w-full justify-between border-slate-700 bg-slate-800/50 font-normal text-white"
                             >
-                              {endDateSelected
-                                ? endDateSelected.toLocaleDateString()
+                              {cal.endDateSelected
+                                ? cal.endDateSelected.toLocaleDateString()
                                 : "Select date"}
                               <ChevronDownIcon />
                             </Button>
@@ -359,23 +342,28 @@ export const AddEditEventDialog = ({
                           >
                             <Calendar
                               mode="single"
-                              selected={endDateSelected}
+                              selected={cal.endDateSelected}
+                              defaultMonth={
+                                cal.endDateSelected ||
+                                cal.startDateSelected ||
+                                cal.getToday()
+                              }
                               captionLayout="dropdown"
-                              disabled={isEndDateDisabled}
+                              disabled={cal.isEndDateDisabled}
                               onSelect={(date) => {
-                                setEndDateSelected(date);
-                                setEndDateOpen(false);
+                                cal.setEndDateSelected(date);
+                                cal.setEndDateOpen(false);
                               }}
                             />
                           </PopoverContent>
                         </Popover>
                         <Input
                           type="time"
-                          value={endTime}
-                          onChange={(e) => setEndTime(e.target.value)}
+                          value={cal.endTime}
+                          onChange={(e) => cal.setEndTime(e.target.value)}
                           className="border-slate-700 bg-slate-800/50 text-white"
                           step="900"
-                          min={getMinEndTime()}
+                          min={cal.getMinEndTime()}
                         />
                       </div>
                     </FormControl>
