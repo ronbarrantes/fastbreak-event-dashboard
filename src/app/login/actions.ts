@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/utils/supabase/server";
@@ -43,4 +44,33 @@ export async function signup(formData: FormData) {
 
   revalidatePath("/", "layout");
   redirect("/");
+}
+
+export async function signInWithGoogle() {
+  const supabase = await createClient();
+  const origin = headers().get("origin");
+  const baseUrl = origin ?? process.env.NEXT_PUBLIC_SITE_URL;
+
+  if (!baseUrl) {
+    throw new Error("Missing base URL for OAuth redirect");
+  }
+
+  const callbackUrl = `${baseUrl}/auth/callback?next=/dashboard`;
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: callbackUrl,
+    },
+  });
+
+  if (error) {
+    redirect("/error");
+  }
+
+  if (data.url) {
+    redirect(data.url);
+  }
+
+  redirect("/dashboard");
 }
