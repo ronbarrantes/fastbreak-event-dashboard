@@ -1,3 +1,5 @@
+"use server";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -6,7 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { login } from "./actions";
+
+import { signInWithGoogle } from "./actions";
 
 export default function LoginPage() {
   return (
@@ -19,8 +22,10 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={login}>
-            <Button>Sign In</Button>
+          <form action={signInWithGoogle} className="space-y-4">
+            <Button type="submit" className="w-full">
+              Continue with Google
+            </Button>
           </form>
         </CardContent>
       </Card>

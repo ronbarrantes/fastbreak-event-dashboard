@@ -1,17 +1,41 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/utils/supabase/server";
 
-export async function login() {
+function resolveRedirectUrl(pathname: string) {
+  const origin = headers().get("origin");
+
+  if (origin) {
+    return `${origin}${pathname}`;
+  }
+
+  const fallback = process.env.NEXT_PUBLIC_SITE_URL ?? process.env.VERCEL_URL;
+
+  if (fallback) {
+    const resolved = fallback.startsWith("http")
+      ? fallback
+      : `https://${fallback}`;
+
+    return `${resolved}${pathname}`;
+  }
+
+  throw new Error(
+    "Unable to determine redirect URL for Supabase OAuth callback. Ensure NEXT_PUBLIC_SITE_URL or VERCEL_URL is set."
+  );
+}
+
+export async function signInWithGoogle() {
   const supabase = await createClient();
 
-  const { error, data } = await supabase.auth.signInWithOAuth({
+  const redirectTo = resolveRedirectUrl("/auth/callback");
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: "http://localhost:3000/auth/v1/callback", // change later
+      redirectTo,
     },
   });
 
@@ -19,6 +43,9 @@ export async function login() {
     redirect("/error");
   }
 
-  revalidatePath("/", "layout");
-  redirect(data.url);
+  if (data?.url) {
+    redirect(data.url);
+  }
+
+  redirect("/login");
 }
