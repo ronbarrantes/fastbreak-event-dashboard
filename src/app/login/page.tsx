@@ -1,7 +1,6 @@
 "use server";
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
 
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,7 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { login, signup } from "./actions";
+
+import { signInWithGoogle } from "./actions";
 
 export default async function LoginPage() {
   return (
@@ -22,13 +22,10 @@ export default async function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
-            <label htmlFor="email">Email:</label>
-            <input id="email" name="email" type="email" required />
-            <label htmlFor="password">Password:</label>
-            <input id="password" name="password" type="password" required />
-            <button formAction={login}>Log in</button>
-            <button formAction={signup}>Sign up</button>
+          <form action={signInWithGoogle} className="space-y-4">
+            <Button type="submit" className="w-full">
+              Continue with Google
+            </Button>
           </form>
         </CardContent>
       </Card>
