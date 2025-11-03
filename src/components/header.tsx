@@ -4,7 +4,6 @@ import Link from "next/link";
 
 import { Container } from "@/components/container";
 import { createClient as createServerSupabaseClient } from "@/utils/supabase/server";
-import { AuthToggleButton } from "./auth-toggle-button";
 
 export const Header = async () => {
   const supabase = await createServerSupabaseClient();
@@ -45,7 +44,6 @@ export const Header = async () => {
                 Hi <span className="text-white">{user.user_metadata.name}</span>
               </span>
             ) : null}
-            <AuthToggleButton />
           </div>
         </div>
       </Container>

@@ -67,7 +67,6 @@ export async function updateSession(request: NextRequest) {
 
   return supabaseResponse;
 }
-
 // import { type NextRequest, NextResponse } from "next/server";
 
 // import { createServerClient } from "@supabase/ssr";
