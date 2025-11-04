@@ -3,27 +3,25 @@
 ## Tasks
 
 - [x] Log in and log out
-
-  - [ ] protected routes (middleware)
+  - [x] protected routes (middleware)
   - [x] Must use Supabase Auth
   - [x] Login Page
-  - [ ] logout page
+  - [x] logout page
 
 - [ ] got to use grids for CSS
 - [ ] Event management CRUD
+  - [x] Event name
+  - [x] Sport Type
+  - [x] Date + Time
+  - [x] Description
+  - [x] Venues
 
-  - [ ] Event name
-  - [ ] Sport Type
-  - [ ] Date + Time
-  - [ ] Description
-  - [ ] Venues
-
-- [ ] toasts
-- [ ] server actions
-- [ ] server components
-- [ ] supabase
-- [ ] bring in the error handling hook
-- [ ] shadcn
+- [x] toasts
+- [x] server actions
+- [x] server components
+- [x] supabase
+- [x] bring in the error handling hook
+- [x] shadcn
 - [ ] search by name
 - [ ] filter by sport function
 - [ ] Documentation how to use
@@ -31,22 +29,19 @@
 ## Plan
 
 - Build basic pages
-
-  - [ ] Login/Logout (signin with google and email)
+  - [x] Login/Logout (signin with google and email)
   - [ ] Landing
   - [ ] Dashboard
-  - [ ] Submit form
+  - [x] Submit form
 
 - Features
-
   - [ ] Loading/loaders
   - [ ] Toasts/Errors
   - [ ] 404
 
 - Backend
-
-  - [ ] Drizzle
-  - [ ] User (maybe not if handled by supabase)
+  - [x] Drizzle
+  - [x] User (maybe not if handled by supabase)
   - [ ] Events
   - [ ] Venues
     - Rules
