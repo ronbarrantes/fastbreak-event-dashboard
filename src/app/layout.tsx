@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { Toaster } from "sonner";
 
 import { Header } from "@/components/header";
+import { ModalDialog } from "@/components/modal-dialog";
 import { ThemeProvider } from "@/components/theme-provider";
 
 import "./globals.css";
@@ -47,6 +48,7 @@ export default function RootLayout({
           <Header />
           {children}
           <Toaster />
+          <ModalDialog />
         </ThemeProvider>
       </body>
     </html>
