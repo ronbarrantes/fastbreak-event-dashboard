@@ -2,6 +2,7 @@ import { AiOutlineClose, AiOutlineWarning } from "react-icons/ai";
 import { BsChevronLeft } from "react-icons/bs";
 import { BsGrid, BsTable } from "react-icons/bs";
 import { FaLink, FaRegFileAlt } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 import { FiCalendar, FiClock, FiHome } from "react-icons/fi";
 import { GiHamburgerMenu } from "react-icons/gi";
 import {
@@ -52,6 +53,7 @@ export const iconFileNames = {
   table: { icon: BsTable },
   login: { icon: LuLogIn },
   logout: { icon: LuLogOut },
+  google: { icon: FcGoogle },
 };
 
 export type IconsLisType = keyof typeof iconFileNames;

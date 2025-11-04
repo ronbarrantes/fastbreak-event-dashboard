@@ -1,5 +1,6 @@
 "use server";
 
+import { Icon } from "@/components/icon";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,7 +24,7 @@ export default async function LoginPage() {
         <CardContent>
           <form action={signInWithGoogle} className="space-y-4">
             <Button type="submit" className="w-full">
-              Continue with Google
+              <Icon name="google" /> Continue with Google
             </Button>
           </form>
         </CardContent>
