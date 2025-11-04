@@ -1,19 +1,13 @@
 "use server";
 
-import { Suspense } from "react";
-
 import Link from "next/link";
+
+import { User } from "@supabase/supabase-js";
 
 import { Button } from "@/components/ui/button";
 import { signOutAction } from "@/lib/actions/auth";
-import { createClient } from "@/utils/supabase/server";
 
-export const AuthToggleButton = async () => {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+export const AuthToggleButton = async ({ user }: { user: User | null }) => {
   const isLoggedIn = Boolean(user);
 
   if (isLoggedIn) {
@@ -27,16 +21,8 @@ export const AuthToggleButton = async () => {
   }
 
   return (
-    <Suspense
-      fallback={
-        <Button variant="ghost" disabled>
-          ...
-        </Button>
-      }
-    >
-      <Button asChild variant="ghost">
-        <Link href="/login">Login</Link>
-      </Button>
-    </Suspense>
+    <Button asChild variant="ghost">
+      <Link href="/login">Login</Link>
+    </Button>
   );
 };

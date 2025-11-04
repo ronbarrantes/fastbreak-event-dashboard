@@ -1,8 +1,11 @@
 "use server";
 
+import { Suspense } from "react";
+
 import Link from "next/link";
 
 import { Container } from "@/components/container";
+import { Skeleton } from "@/components/ui/skeleton";
 import { createClient } from "@/utils/supabase/server";
 import { AuthToggleButton } from "./auth-toggle-button";
 
@@ -45,7 +48,9 @@ export const Header = async () => {
                 Hi <span className="text-white">{user.user_metadata.name}</span>
               </span>
             ) : null}
-            <AuthToggleButton />
+            <Suspense fallback={<Skeleton className="h-10 w-20" />}>
+              <AuthToggleButton user={user} />
+            </Suspense>
           </div>
         </div>
       </Container>
