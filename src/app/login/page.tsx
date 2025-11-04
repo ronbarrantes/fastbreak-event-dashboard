@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { signInWithGoogle } from "./actions";
+import { signInWithGoogle } from "@/lib/actions/auth";
 
 export default async function LoginPage() {
   return (
