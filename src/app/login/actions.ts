@@ -5,8 +5,9 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/utils/supabase/server";
 
-function resolveRedirectUrl(pathname: string) {
-  const origin = headers().get("origin");
+async function resolveRedirectUrl(pathname: string) {
+  const headersList = await headers();
+  const origin = headersList.get("origin");
 
   if (origin) {
     return `${origin}${pathname}`;
@@ -30,7 +31,7 @@ function resolveRedirectUrl(pathname: string) {
 export async function signInWithGoogle() {
   const supabase = await createClient();
 
-  const redirectTo = resolveRedirectUrl("/auth/callback");
+  const redirectTo = await resolveRedirectUrl("/auth/callback");
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
