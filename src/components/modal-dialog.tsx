@@ -1,36 +1,35 @@
-import { AiOutlineClose } from "react-icons/ai";
+"use client";
 
 import { useDialogStore } from "@/state/dialog-store";
 import {
   Dialog,
-  DialogClose,
+  DialogContent,
   DialogDescription,
+  DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
 
 export const ModalDialog = () => {
-  const { isOpen, title, dialogContent, handleDialogClose } = useDialogStore();
+  const { isOpen, title, dialogContent, handleDialogClose, showDialogOutline } =
+    useDialogStore();
+
+  if (!dialogContent) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={handleDialogClose}>
-      <div className="relative max-h-[calc(100vh-80px)] rounded-md border border-slate-300 bg-white p-6">
-        <DialogClose
-          asChild
-          className="absolute top-[-12px] right-[-12px] flex h-8 w-8 rounded-full bg-slate-950 p-1.5 text-2xl text-white shadow-2xl hover:bg-slate-200 hover:text-slate-950"
-        >
-          <AiOutlineClose size={15} />
-        </DialogClose>
-        <div className="flex flex-col justify-between gap-3">
-          {title?.length && (
-            <DialogTitle className="text-2xl font-semibold text-slate-950">
-              {title}
-            </DialogTitle>
-          )}
-          <DialogDescription asChild={typeof dialogContent !== "string"}>
-            {dialogContent}
-          </DialogDescription>
-        </div>
-      </div>
+      <DialogContent
+        className="border-slate-700 bg-slate-900/95 backdrop-blur"
+        showCloseButton={showDialogOutline}
+      >
+        {title && (
+          <DialogHeader>
+            <DialogTitle className="text-white">{title}</DialogTitle>
+          </DialogHeader>
+        )}
+        <DialogDescription asChild={typeof dialogContent !== "string"}>
+          {dialogContent}
+        </DialogDescription>
+      </DialogContent>
     </Dialog>
   );
 };
