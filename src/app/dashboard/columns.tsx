@@ -10,10 +10,18 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { SportEvent } from "@/types/types";
-import { AddEditEventDialog } from "./add-edit-event-dialog";
 import { DeleteEventDialog } from "./delete-event-dialog";
+import { EditEventButton } from "./add-edit-event-dialog";
 
-export const columns: ColumnDef<SportEvent>[] = [
+type Venue = {
+  id: string;
+  name: string;
+  description: string;
+  capacity: number;
+  amenities: string | null;
+};
+
+export const createColumns = (venues: Venue[]): ColumnDef<SportEvent>[] => [
   { accessorKey: "name", header: "Event Name" },
   { accessorKey: "sportType", header: "Sport Type" },
   {
@@ -97,14 +105,14 @@ export const columns: ColumnDef<SportEvent>[] = [
             className="w-48 border-slate-700 bg-slate-900/95 p-2 backdrop-blur"
           >
             <div className="flex flex-col gap-1">
-              <AddEditEventDialog sportEvent={event}>
+              <EditEventButton sportEvent={event} venues={venues}>
                 <Button
                   variant="ghost"
                   className="text-white hover:bg-slate-800 hover:text-white"
                 >
                   Edit
                 </Button>
-              </AddEditEventDialog>
+              </EditEventButton>
 
               <DeleteEventDialog eventId={event.id} eventName={event.name}>
                 <Button variant="destructive" className="w-full justify-start">

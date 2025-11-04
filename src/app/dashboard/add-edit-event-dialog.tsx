@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
@@ -12,15 +12,6 @@ import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -39,7 +30,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { sports } from "@/constants/sports";
 import { useDateTimePicker } from "@/hooks/calendar";
 import { createEvent, updateEvent } from "@/lib/actions/events";
-import { getVenues } from "@/lib/actions/venues";
+import { useDialogStore } from "@/state/dialog-store";
 import { SportEvent } from "@/types/types";
 import { tryCatch } from "@/utils/try-catch";
 
@@ -77,18 +68,17 @@ type Venue = {
   amenities: string | null;
 };
 
+// Content component for the add/edit dialog (used with store)
 export const AddEditEventDialog = ({
-  children,
   sportEvent,
+  venues,
 }: {
-  children: React.ReactNode;
   sportEvent?: SportEvent;
+  venues: Venue[];
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [venues, setVenues] = useState<Venue[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const hasInitialized = useRef(false);
+  const { handleDialogClose } = useDialogStore();
 
   const form = useForm<z.infer<typeof eventSchema>>({
     resolver: zodResolver(eventSchema),
@@ -105,56 +95,27 @@ export const AddEditEventDialog = ({
   // Use the date/time picker hook
   const cal = useDateTimePicker<z.infer<typeof eventSchema>>({ form });
 
-  // Initialize calendar with existing event data when editing
+  // Initialize calendar when sportEvent changes
   useEffect(() => {
-    if (isOpen && sportEvent && !hasInitialized.current) {
-      // Set dates
+    if (sportEvent) {
       if (sportEvent.startDate) {
         const startDate = dayjs(sportEvent.startDate).toDate();
-        cal.setStartDateSelected(startDate);
         const startTimeStr = dayjs(sportEvent.startDate).format("HH:mm");
+        cal.setStartDateSelected(startDate);
         cal.setStartTime(startTimeStr);
       }
       if (sportEvent.endDate) {
         const endDate = dayjs(sportEvent.endDate).toDate();
-        cal.setEndDateSelected(endDate);
         const endTimeStr = dayjs(sportEvent.endDate).format("HH:mm");
+        cal.setEndDateSelected(endDate);
         cal.setEndTime(endTimeStr);
       }
-      hasInitialized.current = true;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, sportEvent?.id]);
-
-  useEffect(() => {
-    if (isOpen) {
-      const loadVenues = async () => {
-        const venuesData = await getVenues();
-        setVenues(venuesData);
-      };
-      loadVenues();
-
-      // Reset form to default values when opening (for new events)
-      if (!sportEvent) {
-        form.reset({
-          eventName: "",
-          sportType: "",
-          description: "",
-          venueId: "",
-          startDate: "",
-          endDate: "",
-        });
-        cal.reset();
-        hasInitialized.current = false;
-      }
     } else {
-      // Reset initialization flag when dialog closes
-      hasInitialized.current = false;
+      // Reset calendar for new events
+      cal.reset();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
-
-  const dialogTitle = sportEvent ? "Edit event" : "Add event";
+  }, [sportEvent?.id]);
 
   const handleSubmit = async (values: z.infer<typeof eventSchema>) => {
     setIsLoading(true);
@@ -193,7 +154,7 @@ export const AddEditEventDialog = ({
           ? "Event updated successfully!"
           : "Event created successfully!"
       );
-      setIsOpen(false);
+      handleDialogClose();
       form.reset();
       cal.reset();
       router.refresh();
@@ -203,251 +164,296 @@ export const AddEditEventDialog = ({
   };
 
   return (
-    <Dialog onOpenChange={setIsOpen} open={isOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="border-slate-700 bg-slate-900/95 backdrop-blur">
-        <DialogHeader>
-          <DialogTitle className="text-white">{dialogTitle}</DialogTitle>
-          <DialogDescription className="text-slate-400">
-            {sportEvent
-              ? "Update the event details below."
-              : "Fill in the details to create a new event."}
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-4"
-          >
+    <div className="space-y-4">
+      <p className="text-sm text-slate-400">
+        {sportEvent
+          ? "Update the event details below."
+          : "Fill in the details to create a new event."}
+      </p>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="eventName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-white">Event Name</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    className="border-slate-700 bg-slate-800/50 text-white"
+                    placeholder="Enter event name"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="sportType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-white">Sport Type</FormLabel>
+                <FormControl>
+                  <select
+                    {...field}
+                    className="ring-offset-background flex h-10 w-full rounded-md border border-slate-700 bg-slate-800/50 px-3 py-2 text-sm text-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <option value="">Select sport type</option>
+                    {sports.map((sport) => (
+                      <option key={sport} value={sport}>
+                        {sport}
+                      </option>
+                    ))}
+                  </select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="venueId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-white">Venue</FormLabel>
+                <FormControl>
+                  <select
+                    {...field}
+                    className="ring-offset-background flex h-10 w-full rounded-md border border-slate-700 bg-slate-800/50 px-3 py-2 text-sm text-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <option value="">Select a venue</option>
+                    {venues.map((venue) => (
+                      <option key={venue.id} value={venue.id}>
+                        {venue.name}
+                      </option>
+                    ))}
+                  </select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-white">Description</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    className="border-slate-700 bg-slate-800/50 text-white"
+                    placeholder="Enter event description"
+                    rows={4}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="eventName"
-              render={({ field }) => (
+              name="startDate"
+              render={() => (
                 <FormItem>
-                  <FormLabel className="text-white">Event Name</FormLabel>
+                  <FormLabel className="text-white">Start Date</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      className="border-slate-700 bg-slate-800/50 text-white"
-                      placeholder="Enter event name"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="sportType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-white">Sport Type</FormLabel>
-                  <FormControl>
-                    <select
-                      {...field}
-                      className="ring-offset-background flex h-10 w-full rounded-md border border-slate-700 bg-slate-800/50 px-3 py-2 text-sm text-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      <option value="">Select sport type</option>
-                      {sports.map((sport) => (
-                        <option key={sport} value={sport}>
-                          {sport}
-                        </option>
-                      ))}
-                    </select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="venueId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-white">Venue</FormLabel>
-                  <FormControl>
-                    <select
-                      {...field}
-                      className="ring-offset-background flex h-10 w-full rounded-md border border-slate-700 bg-slate-800/50 px-3 py-2 text-sm text-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      <option value="">Select a venue</option>
-                      {venues.map((venue) => (
-                        <option key={venue.id} value={venue.id}>
-                          {venue.name}
-                        </option>
-                      ))}
-                    </select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-white">Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      className="border-slate-700 bg-slate-800/50 text-white"
-                      placeholder="Enter event description"
-                      rows={4}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="startDate"
-                render={() => (
-                  <FormItem>
-                    <FormLabel className="text-white">Start Date</FormLabel>
-                    <FormControl>
-                      <div className="flex flex-col gap-3">
-                        <Popover
-                          open={cal.startDateOpen}
-                          onOpenChange={cal.setStartDateOpen}
-                        >
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              className="w-full justify-between border-slate-700 bg-slate-800/50 font-normal text-white"
-                            >
-                              {cal.startDateSelected
-                                ? cal.startDateSelected.toLocaleDateString()
-                                : "Select date"}
-                              <ChevronDownIcon />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent
-                            className="w-auto overflow-hidden border-slate-700 bg-slate-900 p-0"
-                            align="start"
+                    <div className="flex flex-col gap-3">
+                      <Popover
+                        open={cal.startDateOpen}
+                        onOpenChange={cal.setStartDateOpen}
+                      >
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-between border-slate-700 bg-slate-800/50 font-normal text-white"
                           >
-                            <Calendar
-                              mode="single"
-                              selected={cal.startDateSelected}
-                              defaultMonth={
-                                cal.startDateSelected || cal.getToday()
-                              }
-                              captionLayout="dropdown"
-                              disabled={cal.isStartDateDisabled}
-                              onSelect={(date) => {
-                                cal.setStartDateSelected(date);
-                                cal.setStartDateOpen(false);
-                              }}
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <Input
-                          type="time"
-                          value={cal.startTime}
-                          onChange={(e) => cal.setStartTime(e.target.value)}
-                          className="border-slate-700 bg-slate-800/50 text-white"
-                          step="900"
-                          min={cal.getMinStartTime()}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="endDate"
-                render={() => (
-                  <FormItem>
-                    <FormLabel className="text-white">End Date</FormLabel>
-                    <FormControl>
-                      <div className="flex flex-col gap-3">
-                        <Popover
-                          open={cal.endDateOpen}
-                          onOpenChange={cal.setEndDateOpen}
+                            {cal.startDateSelected
+                              ? cal.startDateSelected.toLocaleDateString()
+                              : "Select date"}
+                            <ChevronDownIcon />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="w-auto overflow-hidden border-slate-700 bg-slate-900 p-0"
+                          align="start"
                         >
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              className="w-full justify-between border-slate-700 bg-slate-800/50 font-normal text-white"
-                            >
-                              {cal.endDateSelected
-                                ? cal.endDateSelected.toLocaleDateString()
-                                : "Select date"}
-                              <ChevronDownIcon />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent
-                            className="w-auto overflow-hidden border-slate-700 bg-slate-900 p-0"
-                            align="start"
-                          >
-                            <Calendar
-                              mode="single"
-                              selected={cal.endDateSelected}
-                              defaultMonth={
-                                cal.endDateSelected ||
-                                cal.startDateSelected ||
-                                cal.getToday()
-                              }
-                              captionLayout="dropdown"
-                              disabled={cal.isEndDateDisabled}
-                              onSelect={(date) => {
-                                cal.setEndDateSelected(date);
-                                cal.setEndDateOpen(false);
-                              }}
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <Input
-                          type="time"
-                          value={cal.endTime}
-                          onChange={(e) => cal.setEndTime(e.target.value)}
-                          className="border-slate-700 bg-slate-800/50 text-white"
-                          step="900"
-                          min={cal.getMinEndTime()}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                          <Calendar
+                            mode="single"
+                            selected={cal.startDateSelected}
+                            defaultMonth={
+                              cal.startDateSelected || cal.getToday()
+                            }
+                            captionLayout="dropdown"
+                            disabled={cal.isStartDateDisabled}
+                            onSelect={(date) => {
+                              cal.setStartDateSelected(date);
+                              cal.setStartDateOpen(false);
+                            }}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <Input
+                        type="time"
+                        value={cal.startTime}
+                        onChange={(e) => cal.setStartTime(e.target.value)}
+                        className="border-slate-700 bg-slate-800/50 text-white"
+                        step="900"
+                        min={cal.getMinStartTime()}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsOpen(false)}
-                className="border-slate-700 text-white hover:bg-slate-800"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                className="bg-cyan-500 text-white hover:bg-cyan-600"
-                disabled={isLoading}
-              >
-                {isLoading
-                  ? sportEvent
-                    ? "Updating..."
-                    : "Creating..."
-                  : sportEvent
-                    ? "Update Event"
-                    : "Create Event"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+            <FormField
+              control={form.control}
+              name="endDate"
+              render={() => (
+                <FormItem>
+                  <FormLabel className="text-white">End Date</FormLabel>
+                  <FormControl>
+                    <div className="flex flex-col gap-3">
+                      <Popover
+                        open={cal.endDateOpen}
+                        onOpenChange={cal.setEndDateOpen}
+                      >
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-between border-slate-700 bg-slate-800/50 font-normal text-white"
+                          >
+                            {cal.endDateSelected
+                              ? cal.endDateSelected.toLocaleDateString()
+                              : "Select date"}
+                            <ChevronDownIcon />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="w-auto overflow-hidden border-slate-700 bg-slate-900 p-0"
+                          align="start"
+                        >
+                          <Calendar
+                            mode="single"
+                            selected={cal.endDateSelected}
+                            defaultMonth={
+                              cal.endDateSelected ||
+                              cal.startDateSelected ||
+                              cal.getToday()
+                            }
+                            captionLayout="dropdown"
+                            disabled={cal.isEndDateDisabled}
+                            onSelect={(date) => {
+                              cal.setEndDateSelected(date);
+                              cal.setEndDateOpen(false);
+                            }}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <Input
+                        type="time"
+                        value={cal.endTime}
+                        onChange={(e) => cal.setEndTime(e.target.value)}
+                        className="border-slate-700 bg-slate-800/50 text-white"
+                        step="900"
+                        min={cal.getMinEndTime()}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleDialogClose}
+              className="border-slate-700 text-white hover:bg-slate-800"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className="bg-cyan-500 text-white hover:bg-cyan-600"
+              disabled={isLoading}
+            >
+              {isLoading
+                ? sportEvent
+                  ? "Updating..."
+                  : "Creating..."
+                : sportEvent
+                  ? "Update Event"
+                  : "Create Event"}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 };
+
+// Trigger component for creating events (uses store, accepts children)
+export const CreateEventButton = ({
+  children,
+  venues,
+}: {
+  children: React.ReactNode;
+  venues: Venue[];
+}) => {
+  const { handleDialog } = useDialogStore();
+
+  return (
+    <div
+      onClick={() =>
+        handleDialog({
+          content: <AddEditEventDialog venues={venues} />,
+          title: "Add event",
+        })
+      }
+    >
+      {children}
+    </div>
+  );
+};
+
+// Trigger component for editing events (uses store, accepts children)
+export const EditEventButton = ({
+  children,
+  sportEvent,
+  venues,
+}: {
+  children: React.ReactNode;
+  sportEvent: SportEvent;
+  venues: Venue[];
+}) => {
+  const { handleDialog } = useDialogStore();
+
+  return (
+    <div
+      onClick={() =>
+        handleDialog({
+          content: (
+            <AddEditEventDialog sportEvent={sportEvent} venues={venues} />
+          ),
+          title: "Edit event",
+        })
+      }
+    >
+      {children}
+    </div>
+  );
+};
+
