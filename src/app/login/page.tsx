@@ -1,46 +1,32 @@
-"use client";
-import { useEffect } from "react";
+"use server";
 
-import { useRouter } from "next/navigation";
+import { Icon } from "@/components/icon";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { signInWithGoogle } from "@/lib/actions/auth";
 
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
-
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { createClient as createBrowserSupabaseClient } from "@/utils/supabase/client";
-
-export default function LoginPage() {
-  const router = useRouter();
-  const supabase = createBrowserSupabaseClient();
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) router.replace("/dashboard");
-    });
-
-    const { data: listener } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN") router.replace("/dashboard");
-    });
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
-  }, [router, supabase]);
-
+export default async function LoginPage() {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-8">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Welcome</CardTitle>
-          <CardDescription>Sign in to access your event dashboard</CardDescription>
+          <CardDescription>
+            Sign in to access your event dashboard
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <Auth
-            supabaseClient={supabase}
-            appearance={{ theme: ThemeSupa }}
-            providers={["google"]}
-            onlyThirdPartyProviders
-          />
+          <form action={signInWithGoogle} className="space-y-4">
+            <Button type="submit" className="w-full">
+              <Icon name="google" /> Continue with Google
+            </Button>
+          </form>
         </CardContent>
       </Card>
     </div>

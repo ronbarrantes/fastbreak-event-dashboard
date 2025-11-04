@@ -3,17 +3,34 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { useViewStore } from "@/state/view-store";
 import { SportEvent } from "@/types/types";
-import { columns } from "./columns";
+import { createColumns } from "./columns";
 import { DataTable } from "./data-table";
 import { EventCards } from "./event-cards";
 
-export function EventsView({ events }: { events: SportEvent[] }) {
-  const { viewType } = useViewStore();
+type Venue = {
+  id: string;
+  name: string;
+  description: string;
+  capacity: number;
+  amenities: string | null;
+};
 
+export function EventsView({
+  events,
+  venues,
+}: {
+  events: SportEvent[];
+  venues: Venue[];
+}) {
+  const { viewType } = useViewStore();
+  const columns = createColumns(venues);
+
+  // GRID VIEW
   if (viewType === "grid") {
-    return <EventCards events={events} />;
+    return <EventCards events={events} venues={venues} />;
   }
 
+  // TABLE VIEW
   return (
     <Card className="border-slate-700 bg-slate-900/50">
       <CardContent className="pt-6">

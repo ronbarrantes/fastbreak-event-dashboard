@@ -5,7 +5,7 @@ import { desc, eq } from "drizzle-orm";
 import { db } from "@/server/db";
 import { event, EventInsert, venue } from "@/server/db/schema";
 import { revalidateIfNeeded } from "@/utils/revalidate-if-needed";
-import { createClient as createServerSupabaseClient } from "@/utils/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 
 type CreateEventInput = Omit<
   EventInsert,
@@ -17,7 +17,7 @@ export const createEvent = async (
   input: CreateEventInput,
   options?: { revalidate?: string | string[] }
 ) => {
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

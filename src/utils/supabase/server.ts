@@ -28,7 +28,3 @@ export async function createClient() {
     }
   );
 }
-
-// supabase.auth.signInWithOAuth({
-//   provider: 'google',
-// })
