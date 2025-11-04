@@ -17,8 +17,11 @@ export default async function DashboardPage() {
     sportType: event.sportType as SportType,
     date: event.startDate ?? null,
     description: event.description,
+    startDate: event.startDate ?? null,
+    endDate: event.endDate ?? null,
     venue: venue
       ? {
+          id: venue.id,
           name: venue.name,
           available: true,
           description: venue.description,

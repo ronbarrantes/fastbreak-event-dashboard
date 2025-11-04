@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
@@ -38,7 +38,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { sports } from "@/constants/sports";
 import { useDateTimePicker } from "@/hooks/calendar";
-import { createEvent } from "@/lib/actions/events";
+import { createEvent, updateEvent } from "@/lib/actions/events";
 import { getVenues } from "@/lib/actions/venues";
 import { SportEvent } from "@/types/types";
 import { tryCatch } from "@/utils/try-catch";
@@ -88,6 +88,7 @@ export const AddEditEventDialog = ({
   const [venues, setVenues] = useState<Venue[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const hasInitialized = useRef(false);
 
   const form = useForm<z.infer<typeof eventSchema>>({
     resolver: zodResolver(eventSchema),
@@ -96,26 +97,61 @@ export const AddEditEventDialog = ({
       sportType: sportEvent?.sportType ?? "",
       description: sportEvent?.description ?? "",
       venueId: sportEvent?.venue?.id ?? "",
-      startDate: sportEvent?.startDate
-        ? dayjs(sportEvent.startDate).format("YYYY-MM-DD")
-        : "",
-      endDate: sportEvent?.endDate
-        ? dayjs(sportEvent.endDate).format("YYYY-MM-DD")
-        : "",
+      startDate: "",
+      endDate: "",
     },
   });
 
   // Use the date/time picker hook
   const cal = useDateTimePicker<z.infer<typeof eventSchema>>({ form });
 
+  // Initialize calendar with existing event data when editing
   useEffect(() => {
-    const loadVenues = async () => {
-      const venuesData = await getVenues();
-      setVenues(venuesData);
-    };
-    if (isOpen) {
-      loadVenues();
+    if (isOpen && sportEvent && !hasInitialized.current) {
+      // Set dates
+      if (sportEvent.startDate) {
+        const startDate = dayjs(sportEvent.startDate).toDate();
+        cal.setStartDateSelected(startDate);
+        const startTimeStr = dayjs(sportEvent.startDate).format("HH:mm");
+        cal.setStartTime(startTimeStr);
+      }
+      if (sportEvent.endDate) {
+        const endDate = dayjs(sportEvent.endDate).toDate();
+        cal.setEndDateSelected(endDate);
+        const endTimeStr = dayjs(sportEvent.endDate).format("HH:mm");
+        cal.setEndTime(endTimeStr);
+      }
+      hasInitialized.current = true;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, sportEvent?.id]);
+
+  useEffect(() => {
+    if (isOpen) {
+      const loadVenues = async () => {
+        const venuesData = await getVenues();
+        setVenues(venuesData);
+      };
+      loadVenues();
+
+      // Reset form to default values when opening (for new events)
+      if (!sportEvent) {
+        form.reset({
+          eventName: "",
+          sportType: "",
+          description: "",
+          venueId: "",
+          startDate: "",
+          endDate: "",
+        });
+        cal.reset();
+        hasInitialized.current = false;
+      }
+    } else {
+      // Reset initialization flag when dialog closes
+      hasInitialized.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   const dialogTitle = sportEvent ? "Edit event" : "Add event";
@@ -126,28 +162,37 @@ export const AddEditEventDialog = ({
     const startDateTime = cal.getStartDateTime();
     const endDateTime = cal.getEndDateTime();
 
-    const result = await tryCatch(
-      createEvent(
-        {
-          eventName: values.eventName,
-          sportType: values.sportType,
-          description: values.description,
-          venueId: values.venueId,
-          startDate: dayjs(startDateTime).toDate(),
-          endDate: dayjs(endDateTime).toDate(),
-        },
-        { revalidate: "/dashboard" }
-      )
-    );
+    const eventData = {
+      eventName: values.eventName,
+      sportType: values.sportType,
+      description: values.description,
+      venueId: values.venueId,
+      startDate: dayjs(startDateTime).toDate(),
+      endDate: dayjs(endDateTime).toDate(),
+    };
+
+    const result = sportEvent
+      ? await tryCatch(
+          updateEvent(sportEvent.id, eventData, {
+            revalidate: "/dashboard",
+          })
+        )
+      : await tryCatch(createEvent(eventData, { revalidate: "/dashboard" }));
 
     if (result.error) {
       toast.error(
         result.error instanceof Error
           ? result.error.message
-          : "Failed to create event"
+          : sportEvent
+            ? "Failed to update event"
+            : "Failed to create event"
       );
     } else {
-      toast.success("Event created successfully!");
+      toast.success(
+        sportEvent
+          ? "Event updated successfully!"
+          : "Event created successfully!"
+      );
       setIsOpen(false);
       form.reset();
       cal.reset();
@@ -391,7 +436,13 @@ export const AddEditEventDialog = ({
                 className="bg-cyan-500 text-white hover:bg-cyan-600"
                 disabled={isLoading}
               >
-                {isLoading ? "Creating..." : "Create Event"}
+                {isLoading
+                  ? sportEvent
+                    ? "Updating..."
+                    : "Creating..."
+                  : sportEvent
+                    ? "Update Event"
+                    : "Create Event"}
               </Button>
             </DialogFooter>
           </form>
