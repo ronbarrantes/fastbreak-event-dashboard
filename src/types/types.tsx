@@ -1,20 +1,14 @@
 import { SportType } from "@/constants/sports";
-
-export type Venue = {
-  name: string;
-  available: boolean;
-  description?: string;
-  capacity?: number;
-  amenities?: string;
-};
+import { VenueInsert } from "@/server/db/schema";
 
 export type SportEvent = {
   id: string;
   name: string;
   sportType: SportType;
-  date: Date | null;
+  startDate: Date | null;
+  endDate: Date | null;
   description: string;
-  venue?: Venue;
+  venue?: VenueInsert;
 };
 
 export type { SportType };

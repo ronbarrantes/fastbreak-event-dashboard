@@ -95,9 +95,13 @@ export const AddEditEventDialog = ({
       eventName: sportEvent?.name ?? "",
       sportType: sportEvent?.sportType ?? "",
       description: sportEvent?.description ?? "",
-      venueId: "",
-      startDate: "",
-      endDate: "",
+      venueId: sportEvent?.venue?.id ?? "",
+      startDate: sportEvent?.startDate
+        ? dayjs(sportEvent.startDate).format("YYYY-MM-DD")
+        : "",
+      endDate: sportEvent?.endDate
+        ? dayjs(sportEvent.endDate).format("YYYY-MM-DD")
+        : "",
     },
   });
 

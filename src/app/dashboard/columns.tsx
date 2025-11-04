@@ -20,7 +20,7 @@ export const columns: ColumnDef<SportEvent>[] = [
     accessorKey: "date",
     header: "Date",
     cell: ({ row }) => {
-      const value = row.original.date;
+      const value = row.original.startDate;
       return value ? new Date(value).toLocaleString() : "";
     },
   },
@@ -97,10 +97,9 @@ export const columns: ColumnDef<SportEvent>[] = [
             className="w-48 border-slate-700 bg-slate-900/95 p-2 backdrop-blur"
           >
             <div className="flex flex-col gap-1">
-              <AddEditEventDialog>
+              <AddEditEventDialog sportEvent={event}>
                 <Button
                   variant="ghost"
-                  onClick={() => console.log(`editing ${event.id}`)}
                   className="text-white hover:bg-slate-800 hover:text-white"
                 >
                   Edit
