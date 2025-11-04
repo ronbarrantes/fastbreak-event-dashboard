@@ -3,11 +3,11 @@
 import Link from "next/link";
 
 import { Container } from "@/components/container";
-import { createClient as createServerSupabaseClient } from "@/utils/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 import { AuthToggleButton } from "./auth-toggle-button";
 
 export const Header = async () => {
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createClient();
 
   const {
     data: { user },

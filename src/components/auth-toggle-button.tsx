@@ -1,59 +1,42 @@
-"use client";
+"use server";
 
-import { useEffect, useState } from "react";
+import { Suspense } from "react";
 
-import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { createClient as createBrowserSupabaseClient } from "@/utils/supabase/client";
+import { signOutAction } from "@/lib/actions/auth";
+import { createClient } from "@/utils/supabase/server";
 
-export const AuthToggleButton = () => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const supabase = createBrowserSupabaseClient();
+export const AuthToggleButton = async () => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const isLoggedIn = Boolean(user);
 
-  useEffect(() => {
-    let isActive = true;
-
-    const load = async () => {
-      setIsLoading(true);
-      const { data } = await supabase.auth.getSession();
-      if (!isActive) return;
-      setIsLoggedIn(Boolean(data.session));
-      setIsLoading(false);
-    };
-
-    load();
-
-    const { data: subscription } = supabase.auth.onAuthStateChange(
-      (_, session) => {
-        if (!isActive) return;
-        setIsLoggedIn(Boolean(session));
-      }
+  if (isLoggedIn) {
+    return (
+      <form action={signOutAction}>
+        <Button type="submit" variant="ghost">
+          Logout
+        </Button>
+      </form>
     );
-
-    return () => {
-      isActive = false;
-      subscription.subscription.unsubscribe();
-    };
-  }, [supabase]);
-
-  const handleClick = async () => {
-    if (isLoggedIn) {
-      await supabase.auth.signOut();
-      router.refresh();
-      if (pathname !== "/") router.replace("/");
-    } else {
-      router.push("/login");
-    }
-  };
+  }
 
   return (
-    <Button variant="ghost" onClick={handleClick} disabled={isLoading}>
-      {isLoading ? "..." : isLoggedIn ? "Logout" : "Login"}
-    </Button>
+    <Suspense
+      fallback={
+        <Button variant="ghost" disabled>
+          ...
+        </Button>
+      }
+    >
+      <Button asChild variant="ghost">
+        <Link href="/login">Login</Link>
+      </Button>
+    </Suspense>
   );
 };
