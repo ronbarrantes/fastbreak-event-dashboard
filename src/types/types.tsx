@@ -1,47 +1,14 @@
-type sports = [
-  "soccer",
-  "basketball",
-  "baseball",
-  "football",
-  "rugby",
-  "cricket",
-  "tennis",
-  "table tennis",
-  "badminton",
-  "squash",
-  "volleyball",
-  "beach volleyball",
-  "handball",
-  "field hockey",
-  "ice hockey",
-  "golf",
-  "boxing",
-  "wrestling",
-  "swimming",
-  "diving",
-  "water polo",
-  "rowing",
-  "mountain biking",
-  "triathlon",
-  "gymnastics",
-  "surfing",
-];
-
-export type Venue = {
-  name: string;
-  available: boolean;
-  description?: string;
-  capacity?: number;
-  amenities?: string;
-};
+import { SportType } from "@/constants/sports";
+import { VenueInsert } from "@/server/db/schema";
 
 export type SportEvent = {
   id: string;
   name: string;
   sportType: SportType;
-  date: Date | null;
+  startDate: Date | null;
+  endDate: Date | null;
   description: string;
-  venue?: Venue;
+  venue?: VenueInsert;
 };
 
-export type SportType = sports[number];
+export type { SportType };
