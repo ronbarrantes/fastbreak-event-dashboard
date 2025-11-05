@@ -33,6 +33,14 @@ export const Header = async () => {
               <ul className="flex items-center gap-8 text-sm">
                 <li>
                   <Link
+                    href="/search"
+                    className="text-slate-300 transition-colors hover:text-cyan-400"
+                  >
+                    Search Event
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     href="/dashboard"
                     className="text-slate-300 transition-colors hover:text-cyan-400"
                   >

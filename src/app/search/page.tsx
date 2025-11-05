@@ -1,8 +1,12 @@
 import { Suspense } from "react";
 
+import { BuyTicketButton } from "@/components/buy-ticket-button";
 import { Container } from "@/components/container";
+import { EventCards } from "@/components/event-cards";
 import { SearchForm } from "@/components/search-form";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getEventsWithVenue } from "@/lib/actions/events";
+import { SportEvent, SportType } from "@/types/types";
 
 type SearchPageProps = {
   searchParams: Promise<{
@@ -18,8 +22,48 @@ export default async function EventSearchPage({
   const query = params.query ?? "";
   const sportType = params.sportType ?? "";
 
-  // TODO: Fetch search results based on query and sportType
-  // const results = await searchEvents({ query, sportType });
+  // Fetch all events for now (we'll filter client-side or add server-side filtering later)
+  const rows = await getEventsWithVenue();
+
+  // Transform and filter events
+  let events: SportEvent[] = rows.map(({ event, venue }) => ({
+    id: event.id,
+    name: event.eventName,
+    sportType: event.sportType as SportType,
+    date: event.startDate ?? null,
+    description: event.description,
+    startDate: event.startDate ?? null,
+    endDate: event.endDate ?? null,
+    venue: venue
+      ? {
+          id: venue.id,
+          name: venue.name,
+          available: true,
+          description: venue.description,
+          capacity: venue.capacity,
+          amenities: venue.amenities ?? undefined,
+        }
+      : undefined,
+  }));
+
+  // Filter by query (case-insensitive search in name and description)
+  if (query) {
+    const lowerQuery = query.toLowerCase();
+    events = events.filter(
+      (event) =>
+        event.name.toLowerCase().includes(lowerQuery) ||
+        event.description?.toLowerCase().includes(lowerQuery)
+    );
+  }
+
+  // Filter by sport type
+  if (sportType) {
+    events = events.filter((event) => event.sportType === sportType);
+  }
+
+  const renderActions = (event: SportEvent) => (
+    <BuyTicketButton event={event} />
+  );
 
   return (
     <Container className="py-20">
@@ -47,16 +91,18 @@ export default async function EventSearchPage({
         <SearchForm />
       </Suspense>
 
-      {/* TODO: Display search results */}
-      {(query || sportType) && (
-        <div className="mt-8">
-          <p className="text-slate-400">
-            Search results for: {query && `"${query}"`}
+      {/* Display search results */}
+      <div className="mt-8">
+        {(query || sportType) && (
+          <p className="mb-6 text-slate-400">
+            {events.length} result{events.length !== 1 ? "s" : ""} found
+            {query && ` for "${query}"`}
             {query && sportType && " • "}
             {sportType && `Sport: ${sportType}`}
           </p>
-        </div>
-      )}
+        )}
+        <EventCards events={events} renderActions={renderActions} />
+      </div>
     </Container>
   );
 }
