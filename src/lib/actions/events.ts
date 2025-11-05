@@ -1,6 +1,6 @@
 "use server";
 
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, ilike, inArray, or } from "drizzle-orm";
 
 import { db } from "@/server/db";
 import { event, EventInsert, venue } from "@/server/db/schema";
@@ -70,12 +70,39 @@ export const deleteEvent = async (
   return deleted ?? null;
 };
 
-export const getEventsWithVenue = async () => {
-  const events = await db
+type GetEventsWithVenueOptions = {
+  name?: string;
+  sports?: string[];
+};
+
+export const getEventsWithVenue = async (
+  options?: GetEventsWithVenueOptions
+) => {
+  const conditions = [];
+
+  if (options?.name) {
+    const searchPattern = `%${options.name}%`;
+    conditions.push(
+      or(
+        ilike(event.eventName, searchPattern),
+        ilike(event.description, searchPattern)
+      )!
+    );
+  }
+
+  if (options?.sports && options.sports.length > 0) {
+    conditions.push(inArray(event.sportType, options.sports));
+  }
+
+  const baseQuery = db
     .select({ event, venue })
     .from(event)
-    .leftJoin(venue, eq(event.venueId, venue.id))
-    .orderBy(desc(event.createdAt));
+    .leftJoin(venue, eq(event.venueId, venue.id));
+
+  const query =
+    conditions.length > 0 ? baseQuery.where(and(...conditions)) : baseQuery;
+
+  const events = await query.orderBy(desc(event.createdAt));
   return events;
 };
 
@@ -87,4 +114,34 @@ export const getUpcomingEvents = async (limit: number = 3) => {
     .leftJoin(venue, eq(event.venueId, venue.id))
     .orderBy(desc(event.startDate));
   return events;
+};
+
+/**
+ * Get distinct sport types available in events that match the given query
+ * (excluding sport type filter to show all available sports for the query)
+ */
+export const getAvailableSports = async (query?: string) => {
+  const conditions = [];
+
+  // Filter by name (case-insensitive search in eventName and description)
+  if (query) {
+    const searchPattern = `%${query}%`;
+    conditions.push(
+      or(
+        ilike(event.eventName, searchPattern),
+        ilike(event.description, searchPattern)
+      )!
+    );
+  }
+
+  const baseQuery = db
+    .selectDistinct({ sportType: event.sportType })
+    .from(event);
+
+  // Apply conditions if any
+  const queryBuilder =
+    conditions.length > 0 ? baseQuery.where(and(...conditions)) : baseQuery;
+
+  const results = await queryBuilder.orderBy(event.sportType);
+  return results.map((r) => r.sportType);
 };

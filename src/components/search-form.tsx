@@ -1,10 +1,12 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useEffect } from "react";
+
+import { useRouter, useSearchParams } from "next/navigation";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,9 +26,11 @@ const searchSchema = z.object({
 
 type SearchFormValues = z.infer<typeof searchSchema>;
 
-const sportOptions = ["soccer", "football", "Basketball"] as const;
+type SearchFormProps = {
+  availableSports?: string[];
+};
 
-export const SearchForm = () => {
+export const SearchForm = ({ availableSports = [] }: SearchFormProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -48,11 +52,11 @@ export const SearchForm = () => {
 
   const onSubmit = (data: SearchFormValues) => {
     const params = new URLSearchParams();
-    
+
     if (data.query) {
       params.set("query", data.query);
     }
-    
+
     if (data.sportType) {
       params.set("sportType", data.sportType);
     }
@@ -64,7 +68,7 @@ export const SearchForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="grid grid-cols-[1fr_auto_auto] gap-3 items-end">
+        <div className="grid grid-cols-[1fr_auto_auto] items-end gap-3">
           <FormField
             control={form.control}
             name="query"
@@ -95,7 +99,7 @@ export const SearchForm = () => {
                     className="h-9 w-32 rounded-md border border-slate-700 bg-slate-800/50 px-3 py-2 text-sm text-white focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <option value="">All</option>
-                    {sportOptions.map((sport) => (
+                    {availableSports.map((sport) => (
                       <option key={sport} value={sport}>
                         {sport}
                       </option>
@@ -119,4 +123,3 @@ export const SearchForm = () => {
     </Form>
   );
 };
-

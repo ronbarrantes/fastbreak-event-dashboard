@@ -5,7 +5,7 @@ import { Container } from "@/components/container";
 import { EventCards } from "@/components/event-cards";
 import { SearchForm } from "@/components/search-form";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getEventsWithVenue } from "@/lib/actions/events";
+import { getAvailableSports, getEventsWithVenue } from "@/lib/actions/events";
 import { SportEvent, SportType } from "@/types/types";
 
 type SearchPageProps = {
@@ -22,11 +22,17 @@ export default async function EventSearchPage({
   const query = params.query ?? "";
   const sportType = params.sportType ?? "";
 
-  // Fetch all events for now (we'll filter client-side or add server-side filtering later)
-  const rows = await getEventsWithVenue();
+  // Fetch available sports for the current query (to populate dropdown)
+  const availableSports = await getAvailableSports(query || undefined);
 
-  // Transform and filter events
-  let events: SportEvent[] = rows.map(({ event, venue }) => ({
+  // Fetch events with server-side filtering
+  const rows = await getEventsWithVenue({
+    name: query || undefined,
+    sports: sportType ? [sportType] : undefined,
+  });
+
+  // Transform events
+  const events: SportEvent[] = rows.map(({ event, venue }) => ({
     id: event.id,
     name: event.eventName,
     sportType: event.sportType as SportType,
@@ -45,21 +51,6 @@ export default async function EventSearchPage({
         }
       : undefined,
   }));
-
-  // Filter by query (case-insensitive search in name and description)
-  if (query) {
-    const lowerQuery = query.toLowerCase();
-    events = events.filter(
-      (event) =>
-        event.name.toLowerCase().includes(lowerQuery) ||
-        event.description?.toLowerCase().includes(lowerQuery)
-    );
-  }
-
-  // Filter by sport type
-  if (sportType) {
-    events = events.filter((event) => event.sportType === sportType);
-  }
 
   const renderActions = (event: SportEvent) => (
     <BuyTicketButton event={event} />
@@ -88,7 +79,7 @@ export default async function EventSearchPage({
           </div>
         }
       >
-        <SearchForm />
+        <SearchForm availableSports={availableSports} />
       </Suspense>
 
       {/* Display search results */}
