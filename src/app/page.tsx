@@ -210,7 +210,7 @@ export default async function Home() {
 
       <footer className="border-t border-slate-800/60 bg-slate-900/30 py-8">
         <Container className="flex flex-col items-center justify-between gap-4 text-sm text-slate-400 md:flex-row">
-          <p>© 2024 Fastbreak Events. All rights reserved.</p>
+          <p>Fastbreak AI</p>
           <p>Created with ❤️ by RonB</p>
         </Container>
       </footer>
