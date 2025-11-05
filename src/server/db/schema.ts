@@ -25,6 +25,7 @@ export const event = createTable("events", (d) => ({
   eventName: d.text().notNull(),
   sportType: d.text().notNull(),
   description: d.text().notNull(),
+  price: d.numeric({ precision: 10, scale: 2 }).notNull(),
   startDate: d.timestamp({ withTimezone: true }).notNull(),
   endDate: d.timestamp({ withTimezone: true }).notNull(),
   createdAt: d

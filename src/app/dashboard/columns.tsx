@@ -10,8 +10,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { SportEvent } from "@/types/types";
-import { DeleteEventDialog } from "./delete-event-dialog";
 import { EditEventButton } from "./add-edit-event-dialog";
+import { DeleteEventDialog } from "./delete-event-dialog";
 
 type Venue = {
   id: string;
@@ -108,14 +108,14 @@ export const createColumns = (venues: Venue[]): ColumnDef<SportEvent>[] => [
               <EditEventButton sportEvent={event} venues={venues}>
                 <Button
                   variant="ghost"
-                  className="text-white hover:bg-slate-800 hover:text-white"
+                  className="w-full justify-center text-white hover:bg-slate-800 hover:text-white"
                 >
                   Edit
                 </Button>
               </EditEventButton>
 
               <DeleteEventDialog eventId={event.id} eventName={event.name}>
-                <Button variant="destructive" className="w-full justify-start">
+                <Button variant="destructive" className="w-full justify-center">
                   Delete
                 </Button>
               </DeleteEventDialog>

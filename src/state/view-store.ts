@@ -17,7 +17,7 @@ export const useViewStore = create<ViewStore>()(
   devtools(
     persist(
       (set) => ({
-        viewType: "table",
+        viewType: "grid",
         setViewType: (viewType) => set({ viewType }),
       }),
       {

@@ -5,7 +5,7 @@ import { useViewStore } from "@/state/view-store";
 import { SportEvent } from "@/types/types";
 import { createColumns } from "./columns";
 import { DataTable } from "./data-table";
-import { EventCards } from "./event-cards";
+import { DashboardEventCards } from "./event-cards";
 
 type Venue = {
   id: string;
@@ -27,7 +27,7 @@ export function EventsView({
 
   // GRID VIEW
   if (viewType === "grid") {
-    return <EventCards events={events} venues={venues} />;
+    return <DashboardEventCards events={events} venues={venues} />;
   }
 
   // TABLE VIEW

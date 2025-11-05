@@ -48,6 +48,20 @@ const eventSchema = z
     venueId: z.uuid({
       message: "Please select a venue.",
     }),
+    price: z
+      .string()
+      .min(1, {
+        message: "Price is required.",
+      })
+      .refine(
+        (val) => {
+          const num = parseFloat(val);
+          return !isNaN(num) && num >= 0;
+        },
+        {
+          message: "Price must be a valid number greater than or equal to 0.",
+        }
+      ),
     startDate: z.string().min(1, {
       message: "Start date is required.",
     }),
@@ -87,6 +101,7 @@ export const AddEditEventDialog = ({
       sportType: sportEvent?.sportType ?? "",
       description: sportEvent?.description ?? "",
       venueId: sportEvent?.venue?.id ?? "",
+      price: "",
       startDate: "",
       endDate: "",
     },
@@ -128,6 +143,7 @@ export const AddEditEventDialog = ({
       sportType: values.sportType,
       description: values.description,
       venueId: values.venueId,
+      price: values.price,
       startDate: dayjs(startDateTime).toDate(),
       endDate: dayjs(endDateTime).toDate(),
     };
@@ -251,6 +267,27 @@ export const AddEditEventDialog = ({
                     className="border-slate-700 bg-slate-800/50 text-white"
                     placeholder="Enter event description"
                     rows={4}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="price"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-white">Price</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                    className="border-slate-700 bg-slate-800/50 text-white"
                   />
                 </FormControl>
                 <FormMessage />
