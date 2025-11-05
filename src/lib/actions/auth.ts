@@ -7,16 +7,18 @@ import { createClient } from "@/utils/supabase/server";
 
 const getURL = () => {
   let url =
-    process?.env?.NEXT_PUBLIC_SITE_URL?.trim() ??
-    process?.env?.VERCEL_URL?.trim() ??
+    process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
+    process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Can be manually set in Vercel
+    process?.env?.VERCEL_URL ?? // Automatically set by Vercel (server-side only)
     "http://localhost:3000/";
 
+  // Trim any whitespace
   url = url.trim();
 
-  if (!url.startsWith("http")) {
-    url = `https://${url}`;
-  }
+  // Make sure to include `https://` when not localhost.
+  url = url.startsWith("http") ? url : `https://${url}`;
 
+  // Make sure to include a trailing `/`.
   url = url.endsWith("/") ? url : `${url}/`;
 
   return url;
@@ -41,6 +43,7 @@ export const signInWithGoogle = async () => {
   });
 
   if (error) {
+    console.error("OAuth error:", error);
     redirect("/error");
   }
 
