@@ -68,9 +68,8 @@ export const RemoveTicketButton = ({
           <div>
             <h3 className="text-sm font-semibold text-white">Remove Ticket?</h3>
             <p className="mt-1 text-sm text-slate-400">
-              Are you sure you want to remove your ticket for{" "}
-              <strong className="text-white">{event.name}</strong>? This action
-              cannot be undone.
+              Are you sure you want to remove your ticket? This action cannot be
+              undone.
             </p>
           </div>
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
