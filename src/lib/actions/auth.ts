@@ -6,26 +6,72 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 
 const getURL = () => {
+  const isProduction = process.env.NODE_ENV === "production";
+  const isDevelopment = process.env.NODE_ENV === "development";
+
   const envVars = {
     NEXT_PUBLIC_SITE_URL: process?.env?.NEXT_PUBLIC_SITE_URL,
     NEXT_PUBLIC_VERCEL_URL: process?.env?.NEXT_PUBLIC_VERCEL_URL,
     VERCEL_URL: process?.env?.VERCEL_URL,
+    NODE_ENV: process?.env?.NODE_ENV,
   };
 
-  let url =
-    process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
-    process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Can be manually set in Vercel
-    process?.env?.VERCEL_URL ?? // Automatically set by Vercel (server-side only)
-    "http://localhost:3000/";
+  // In production, we should never use localhost
+  let url: string | undefined;
+
+  // Priority order:
+  // 1. NEXT_PUBLIC_SITE_URL (explicitly set)
+  // 2. NEXT_PUBLIC_VERCEL_URL (manually set in Vercel)
+  // 3. VERCEL_URL (automatically set by Vercel)
+  // 4. localhost only in development
+  url = process?.env?.NEXT_PUBLIC_SITE_URL;
+
+  if (!url) {
+    url = process?.env?.NEXT_PUBLIC_VERCEL_URL;
+  }
+
+  if (!url) {
+    url = process?.env?.VERCEL_URL;
+  }
+
+  // Only use localhost in development
+  if (!url && isDevelopment) {
+    url = "http://localhost:3000";
+  }
+
+  // In production, if we still don't have a URL, throw an error
+  if (!url && isProduction) {
+    console.error("[getURL] ERROR: No URL found in production environment!");
+    console.error("[getURL] Environment variables:", envVars);
+    throw new Error(
+      "Missing NEXT_PUBLIC_SITE_URL or VERCEL_URL environment variable in production"
+    );
+  }
+
+  // If we still don't have a URL (neither production nor development), default to localhost
+  if (!url) {
+    url = "http://localhost:3000";
+  }
 
   // Trim any whitespace
   url = url.trim();
 
   // Make sure to include `https://` when not localhost.
-  url = url.startsWith("http") ? url : `https://${url}`;
+  if (!url.startsWith("http")) {
+    // VERCEL_URL doesn't include protocol, so add https://
+    url = `https://${url}`;
+  }
 
   // Make sure to include a trailing `/`.
   url = url.endsWith("/") ? url : `${url}/`;
+
+  // Remove trailing slash if it's localhost (keep it consistent)
+  if (url.includes("localhost")) {
+    url = url.replace(/\/+$/, "");
+    if (!url.endsWith("/")) {
+      url = `${url}/`;
+    }
+  }
 
   console.log("[getURL] Environment variables:", envVars);
   console.log("[getURL] Resolved URL:", url);
@@ -44,7 +90,10 @@ export const signInWithGoogle = async () => {
 
   const redirectTo = await resolveRedirectUrl("/auth/callback");
 
-  console.log("[signInWithGoogle] Redirect URL being sent to Supabase:", redirectTo);
+  console.log(
+    "[signInWithGoogle] Redirect URL being sent to Supabase:",
+    redirectTo
+  );
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
