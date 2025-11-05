@@ -41,10 +41,18 @@ export const Header = async () => {
                 </li>
                 <li>
                   <Link
+                    href="/attending"
+                    className="text-slate-300 transition-colors hover:text-cyan-400"
+                  >
+                    Attending
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     href="/dashboard"
                     className="text-slate-300 transition-colors hover:text-cyan-400"
                   >
-                    Dashboard
+                    Manage events
                   </Link>
                 </li>
               </ul>
