@@ -1,5 +1,6 @@
 "use server";
 
+import { Suspense } from "react";
 import Link from "next/link";
 
 import { Container } from "@/components/container";
@@ -12,21 +13,47 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { UpcomingEvent } from "@/components/upcoming-event";
+import { UpcomingEventsSkeleton } from "@/components/skeletons/upcoming-event-skeleton";
 import { getUpcomingEvents } from "@/lib/actions/events";
 import { tryCatch } from "@/utils/try-catch";
 
-export default async function Home() {
+async function UpcomingEvents() {
   const { error, data } = await tryCatch(getUpcomingEvents());
 
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return (
+      <p className="text-sm text-red-400">
+        Failed to load upcoming events. Please try again later.
+      </p>
+    );
   }
 
   const upcomingEvents = data?.map((event) => ({
     id: event.event.id,
     name: event.event.eventName,
     date: event.event.startDate ?? null,
-  }));
+  })) ?? [];
+
+  if (upcomingEvents.length === 0) {
+    return (
+      <p className="text-sm text-slate-400">No upcoming events at this time.</p>
+    );
+  }
+
+  return (
+    <>
+      {upcomingEvents.map((event) => (
+        <UpcomingEvent
+          key={event.id}
+          name={event.name}
+          date={event.date}
+        />
+      ))}
+    </>
+  );
+}
+
+export default async function Home() {
 
   return (
     <>
@@ -64,13 +91,9 @@ export default async function Home() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {upcomingEvents.map((event) => (
-                  <UpcomingEvent
-                    key={event.id}
-                    name={event.name}
-                    date={event.date}
-                  />
-                ))}
+                <Suspense fallback={<UpcomingEventsSkeleton count={3} />}>
+                  <UpcomingEvents />
+                </Suspense>
               </CardContent>
             </Card>
           </div>
