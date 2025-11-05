@@ -1,0 +1,1 @@
+ALTER TABLE "fastbreakai_dash_events" ADD COLUMN "price" numeric(10, 2) NOT NULL;
