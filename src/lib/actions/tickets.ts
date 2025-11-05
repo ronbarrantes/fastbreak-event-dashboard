@@ -1,17 +1,33 @@
 "use server";
 
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 
 import { db } from "@/server/db";
 import { ticket, TicketInsert } from "@/server/db/schema";
 import { revalidateIfNeeded } from "@/utils/revalidate-if-needed";
 import { createClient } from "@/utils/supabase/server";
 
-type CreateTicketInput = Omit<
-  TicketInsert,
-  "id" | "userId" | "issuedAt"
->;
+type CreateTicketInput = Omit<TicketInsert, "id" | "userId" | "issuedAt">;
 type UpdateTicketInput = Partial<Omit<CreateTicketInput, "eventId">>;
+
+export const getUserTicketForEvent = async (eventId: string) => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return null;
+  }
+
+  const tickets = await db
+    .select()
+    .from(ticket)
+    .where(and(eq(ticket.eventId, eventId), eq(ticket.userId, user.id)))
+    .limit(1);
+
+  return tickets[0] ?? null;
+};
 
 export const createTicket = async (
   input: CreateTicketInput,
@@ -24,6 +40,12 @@ export const createTicket = async (
 
   if (!user) {
     throw new Error("User must be authenticated to create tickets");
+  }
+
+  // Check if user already has a ticket for this event
+  const existingTicket = await getUserTicketForEvent(input.eventId);
+  if (existingTicket) {
+    throw new Error("You already have a ticket for this event");
   }
 
   const [created] = await db
@@ -39,7 +61,11 @@ export const getTickets = async () =>
   await db.select().from(ticket).orderBy(desc(ticket.issuedAt));
 
 export const getTicket = async (id: string) => {
-  const tickets = await db.select().from(ticket).where(eq(ticket.id, id)).limit(1);
+  const tickets = await db
+    .select()
+    .from(ticket)
+    .where(eq(ticket.id, id))
+    .limit(1);
 
   return tickets[0] ?? null;
 };
@@ -149,7 +175,10 @@ export const deleteTicket = async (
     throw new Error("You can only delete your own tickets");
   }
 
-  const [deleted] = await db.delete(ticket).where(eq(ticket.id, id)).returning();
+  const [deleted] = await db
+    .delete(ticket)
+    .where(eq(ticket.id, id))
+    .returning();
   revalidateIfNeeded(options?.revalidate);
 
   return deleted ?? null;
