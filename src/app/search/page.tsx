@@ -31,18 +31,16 @@ export default async function EventSearchPage({
 
       <Suspense
         fallback={
-          <div className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-10 w-full" />
-              </div>
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-10 w-full" />
-              </div>
+          <div className="grid grid-cols-[1fr_auto_auto] items-end gap-3">
+            <div className="space-y-1">
+              <Skeleton className="h-3 w-16" />
+              <Skeleton className="h-9 w-full" />
             </div>
-            <Skeleton className="h-10 w-24" />
+            <div className="space-y-1">
+              <Skeleton className="h-3 w-12" />
+              <Skeleton className="h-9 w-32" />
+            </div>
+            <Skeleton className="h-9 w-20" />
           </div>
         }
       >

@@ -63,19 +63,19 @@ export const SearchForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid gap-6 md:grid-cols-2">
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <div className="grid grid-cols-[1fr_auto_auto] gap-3 items-end">
           <FormField
             control={form.control}
             name="query"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-white">Search</FormLabel>
+              <FormItem className="space-y-1">
+                <FormLabel className="text-xs text-slate-400">Search</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="Search events by name..."
-                    className="border-slate-700 bg-slate-800/50 text-white placeholder:text-slate-400"
+                    placeholder="Search events..."
+                    className="h-9 border-slate-700 bg-slate-800/50 text-sm text-white placeholder:text-slate-500"
                   />
                 </FormControl>
                 <FormMessage />
@@ -87,14 +87,14 @@ export const SearchForm = () => {
             control={form.control}
             name="sportType"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-white">Sport Type</FormLabel>
+              <FormItem className="space-y-1">
+                <FormLabel className="text-xs text-slate-400">Sport</FormLabel>
                 <FormControl>
                   <select
                     {...field}
-                    className="ring-offset-background flex h-10 w-full rounded-md border border-slate-700 bg-slate-800/50 px-3 py-2 text-sm text-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                    className="h-9 w-32 rounded-md border border-slate-700 bg-slate-800/50 px-3 py-2 text-sm text-white focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <option value="">All Sports</option>
+                    <option value="">All</option>
                     {sportOptions.map((sport) => (
                       <option key={sport} value={sport}>
                         {sport}
@@ -106,14 +106,15 @@ export const SearchForm = () => {
               </FormItem>
             )}
           />
-        </div>
 
-        <Button
-          type="submit"
-          className="bg-cyan-500 text-white hover:bg-cyan-600"
-        >
-          Search
-        </Button>
+          <Button
+            type="submit"
+            size="sm"
+            className="h-9 bg-cyan-500 text-white hover:bg-cyan-600"
+          >
+            Search
+          </Button>
+        </div>
       </form>
     </Form>
   );
