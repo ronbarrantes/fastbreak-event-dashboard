@@ -11,8 +11,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { UpcomingEvent } from "@/components/upcoming-event";
+import { getUpcomingEvents } from "@/lib/actions/events";
+import { tryCatch } from "@/utils/try-catch";
 
 export default async function Home() {
+  const { error, data } = await tryCatch(getUpcomingEvents());
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  const upcomingEvents = data?.map((event) => ({
+    id: event.event.id,
+    name: event.event.eventName,
+    date: event.event.startDate ?? null,
+  }));
+
   return (
     <>
       <main className="min-h-screen">
@@ -45,36 +60,17 @@ export default async function Home() {
               <CardHeader>
                 <CardTitle className="text-cyan-400">Upcoming Events</CardTitle>
                 <CardDescription className="text-slate-400">
-                  Check out what&apos;s coming soon
+                  {`Check out what's coming soon`}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="rounded-lg border border-slate-700 bg-slate-800/30 p-4">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-semibold text-white">
-                        Basketball Championship
-                      </h3>
-                      <p className="text-sm text-slate-400">March 15, 2024</p>
-                    </div>
-                    <span className="rounded-full bg-cyan-500/20 px-3 py-1 text-xs font-medium text-cyan-400">
-                      Soon
-                    </span>
-                  </div>
-                </div>
-                <div className="rounded-lg border border-slate-700 bg-slate-800/30 p-4">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-semibold text-white">
-                        Community Sports Day
-                      </h3>
-                      <p className="text-sm text-slate-400">April 2, 2024</p>
-                    </div>
-                    <span className="rounded-full bg-cyan-500/20 px-3 py-1 text-xs font-medium text-cyan-400">
-                      Soon
-                    </span>
-                  </div>
-                </div>
+                {upcomingEvents.map((event) => (
+                  <UpcomingEvent
+                    key={event.id}
+                    name={event.name}
+                    date={event.date}
+                  />
+                ))}
               </CardContent>
             </Card>
           </div>

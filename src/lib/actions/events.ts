@@ -39,9 +39,9 @@ export const getEvents = async () =>
   await db.select().from(event).orderBy(desc(event.createdAt));
 
 export const getEvent = async (id: string) => {
-  const rows = await db.select().from(event).where(eq(event.id, id)).limit(1);
+  const events = await db.select().from(event).where(eq(event.id, id)).limit(1);
 
-  return rows[0] ?? null;
+  return events[0] ?? null;
 };
 
 export const updateEvent = async (
@@ -71,10 +71,20 @@ export const deleteEvent = async (
 };
 
 export const getEventsWithVenue = async () => {
-  const rows = await db
+  const events = await db
     .select({ event, venue })
     .from(event)
     .leftJoin(venue, eq(event.venueId, venue.id))
     .orderBy(desc(event.createdAt));
-  return rows;
+  return events;
+};
+
+export const getUpcomingEvents = async (limit: number = 3) => {
+  const events = await db
+    .select({ event, venue })
+    .from(event)
+    .limit(limit)
+    .leftJoin(venue, eq(event.venueId, venue.id))
+    .orderBy(desc(event.startDate));
+  return events;
 };
