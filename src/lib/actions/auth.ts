@@ -7,14 +7,16 @@ import { createClient } from "@/utils/supabase/server";
 
 const getURL = () => {
   let url =
-    process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
-    process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
+    process?.env?.NEXT_PUBLIC_SITE_URL?.trim() ??
+    process?.env?.VERCEL_URL?.trim() ??
     "http://localhost:3000/";
 
-  // Make sure to include `https://` when not localhost.
-  url = url.startsWith("http") ? url : `https://${url}`;
+  url = url.trim();
 
-  // Make sure to include a trailing `/`.
+  if (!url.startsWith("http")) {
+    url = `https://${url}`;
+  }
+
   url = url.endsWith("/") ? url : `${url}/`;
 
   return url;
@@ -22,7 +24,6 @@ const getURL = () => {
 
 export const resolveRedirectUrl = async (pathname: string) => {
   const baseUrl = getURL();
-  // Remove trailing slash from baseUrl if present, then add pathname
   const cleanBaseUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
   return `${cleanBaseUrl}${pathname}`;
 };
