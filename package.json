@@ -10,6 +10,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
+    "db:seed": "tsx src/server/db/seed.ts",
     "db:studio": "drizzle-kit studio",
     "vercel:env": "vercel env pull .env.local",
     "psql": "dotenv -e .env.local -- psql \"$DATABASE_STUDIO_URL\""
