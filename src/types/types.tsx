@@ -9,6 +9,7 @@ export type SportEvent = {
   endDate: Date | null;
   description: string;
   venue?: VenueInsert;
+  ticketStatus?: "purchased" | "available";
 };
 
 export type { SportType };
