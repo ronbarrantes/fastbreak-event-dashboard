@@ -6,6 +6,12 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 
 const getURL = () => {
+  const envVars = {
+    NEXT_PUBLIC_SITE_URL: process?.env?.NEXT_PUBLIC_SITE_URL,
+    NEXT_PUBLIC_VERCEL_URL: process?.env?.NEXT_PUBLIC_VERCEL_URL,
+    VERCEL_URL: process?.env?.VERCEL_URL,
+  };
+
   let url =
     process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
     process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Can be manually set in Vercel
@@ -21,6 +27,9 @@ const getURL = () => {
   // Make sure to include a trailing `/`.
   url = url.endsWith("/") ? url : `${url}/`;
 
+  console.log("[getURL] Environment variables:", envVars);
+  console.log("[getURL] Resolved URL:", url);
+
   return url;
 };
 
@@ -34,6 +43,8 @@ export const signInWithGoogle = async () => {
   const supabase = await createClient();
 
   const redirectTo = await resolveRedirectUrl("/auth/callback");
+
+  console.log("[signInWithGoogle] Redirect URL being sent to Supabase:", redirectTo);
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
