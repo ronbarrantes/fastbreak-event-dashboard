@@ -5,7 +5,8 @@ import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { X } from "lucide-react";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -65,10 +66,26 @@ export const SearchForm = ({ availableSports = [] }: SearchFormProps) => {
     router.push(`/search${queryString ? `?${queryString}` : ""}`);
   };
 
+  const handleClear = () => {
+    form.reset({
+      query: "",
+      sportType: "",
+    });
+    router.push("/search");
+  };
+
+  // Watch form values to determine if there are dirty inputs
+  const queryValue = useWatch({ control: form.control, name: "query" });
+  const sportTypeValue = useWatch({ control: form.control, name: "sportType" });
+  const hasDirtyInputs =
+    (queryValue?.trim() ?? "") !== "" || (sportTypeValue ?? "") !== "";
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="grid grid-cols-[1fr_auto_auto] items-end gap-3">
+        <div
+          className={`grid items-end gap-3 ${hasDirtyInputs ? "grid-cols-[1fr_auto_auto_auto]" : "grid-cols-[1fr_auto_auto]"}`}
+        >
           <FormField
             control={form.control}
             name="query"
@@ -96,7 +113,7 @@ export const SearchForm = ({ availableSports = [] }: SearchFormProps) => {
                 <FormControl>
                   <select
                     {...field}
-                    className="h-9 w-32 rounded-md border border-slate-700 bg-slate-800/50 px-3 py-2 text-sm text-white focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                    className="h-9 w-32 rounded-md border border-slate-700 bg-slate-800/50 px-3 py-2 text-sm text-white capitalize focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <option value="">All</option>
                     {availableSports.map((sport) => (
@@ -118,6 +135,17 @@ export const SearchForm = ({ availableSports = [] }: SearchFormProps) => {
           >
             Search
           </Button>
+          {hasDirtyInputs && (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={handleClear}
+              className="h-9 border-slate-700 bg-slate-800/50 text-white hover:bg-slate-700/50"
+            >
+              <X className="size-4" />
+            </Button>
+          )}
         </div>
       </form>
     </Form>
