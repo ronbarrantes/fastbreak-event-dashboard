@@ -63,10 +63,7 @@ export default async function Home() {
                 <span className="text-cyan-400">Sports Events</span>
               </h1>
               <p className="text-lg text-slate-300 md:text-xl">
-                Find exciting sports events near you, purchase tickets, and
-                manage your attendance all in one place. Whether you&apos;re
-                looking to attend or organize events, Fastbreak Events has you
-                covered.
+                {`Find exciting sports events near you, purchase tickets, and manage your attendance all in one place. Whether you're looking to attend or organize events, Fastbreak Events has you covered.`}
               </p>
               <div className="flex flex-col gap-4 sm:flex-row">
                 <Button
@@ -85,7 +82,7 @@ export default async function Home() {
               <CardHeader>
                 <CardTitle className="text-cyan-400">Upcoming Events</CardTitle>
                 <CardDescription className="text-slate-400">
-                  Check out what&apos;s coming soon
+                  {`Check out what's coming soon`}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -102,8 +99,7 @@ export default async function Home() {
             Everything You Need
           </h2>
           <p className="mb-12 text-center text-slate-400">
-            Powerful features designed to make discovering and managing sports
-            events simple
+            {`Powerful features designed to make discovering and managing sports events simple and easy.`}
           </p>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <Card className="border-slate-700 bg-slate-900/50">
@@ -117,9 +113,7 @@ export default async function Home() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-slate-300">
-                  Easily search through all available sports events. Filter by
-                  sport type to find exactly what you&apos;re looking for, from
-                  basketball to soccer and more.
+                  {`Easily search through all available sports events. Filter by sport type to find exactly what you're looking for, from basketball to soccer and more.`}
                 </p>
               </CardContent>
             </Card>
@@ -133,9 +127,7 @@ export default async function Home() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-slate-300">
-                  Secure your spot at upcoming events with just a few clicks.
-                  Track your purchased tickets and manage your event attendance
-                  effortlessly.
+                  {`Secure your spot at upcoming events with just a few clicks. Track your purchased tickets and manage your event attendance effortlessly.`}
                 </p>
               </CardContent>
             </Card>
@@ -149,9 +141,7 @@ export default async function Home() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-slate-300">
-                  Event organizers can create and manage their events with ease.
-                  Set dates, add venues, include descriptions, and organize
-                  everything from one dashboard.
+                  {`Event organizers can create and manage their events with ease. Set dates, add venues, include descriptions, and organize everything from one dashboard.`}
                 </p>
               </CardContent>
             </Card>
@@ -162,13 +152,12 @@ export default async function Home() {
                   Track Your Attendance
                 </CardTitle>
                 <CardDescription className="text-slate-400">
-                  View all events you&apos;re attending
+                  {`View all events you're attending`}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-slate-300">
-                  Keep track of all the events you have tickets for. View event
-                  details, dates, and venues all in one convenient place.
+                  {`Keep track of all the events you have tickets for. View event details, dates, and venues all in one convenient place.`}
                 </p>
               </CardContent>
             </Card>
@@ -182,9 +171,7 @@ export default async function Home() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-slate-300">
-                  Each event includes comprehensive venue information including
-                  capacity, amenities, and location details to help you plan
-                  your visit.
+                  {`Each event includes comprehensive venue information including capacity, amenities, and location details to help you plan your visit.`}
                 </p>
               </CardContent>
             </Card>
@@ -198,8 +185,7 @@ export default async function Home() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-slate-300">
-                  Your data is secured with Supabase authentication. Sign in
-                  with email or Google to access all features safely.
+                  {`Sign in with email or Google to access all features safely.`}
                 </p>
               </CardContent>
             </Card>

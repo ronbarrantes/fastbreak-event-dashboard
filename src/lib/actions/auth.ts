@@ -16,14 +16,8 @@ const getURL = () => {
     NODE_ENV: process?.env?.NODE_ENV,
   };
 
-  // In production, we should never use localhost
   let url: string | undefined;
 
-  // Priority order:
-  // 1. NEXT_PUBLIC_SITE_URL (explicitly set)
-  // 2. NEXT_PUBLIC_VERCEL_URL (manually set in Vercel)
-  // 3. VERCEL_URL (automatically set by Vercel)
-  // 4. localhost only in development
   url = process?.env?.NEXT_PUBLIC_SITE_URL;
 
   if (!url) {
@@ -34,12 +28,10 @@ const getURL = () => {
     url = process?.env?.VERCEL_URL;
   }
 
-  // Only use localhost in development
   if (!url && isDevelopment) {
     url = "http://localhost:3000";
   }
 
-  // In production, if we still don't have a URL, throw an error
   if (!url && isProduction) {
     console.error("[getURL] ERROR: No URL found in production environment!");
     console.error("[getURL] Environment variables:", envVars);
@@ -48,24 +40,18 @@ const getURL = () => {
     );
   }
 
-  // If we still don't have a URL (neither production nor development), default to localhost
   if (!url) {
     url = "http://localhost:3000";
   }
 
-  // Trim any whitespace
   url = url.trim();
 
-  // Make sure to include `https://` when not localhost.
   if (!url.startsWith("http")) {
-    // VERCEL_URL doesn't include protocol, so add https://
     url = `https://${url}`;
   }
 
-  // Make sure to include a trailing `/`.
   url = url.endsWith("/") ? url : `${url}/`;
 
-  // Remove trailing slash if it's localhost (keep it consistent)
   if (url.includes("localhost")) {
     url = url.replace(/\/+$/, "");
     if (!url.endsWith("/")) {
