@@ -7,12 +7,10 @@ import { SportEvent, SportType } from "@/types/types";
 export const dynamic = "force-dynamic";
 
 export default async function AttendingPage() {
-  // Fetch user's tickets with event and venue data
   const rows = await getUserTicketsWithEvents();
 
-  // Transform to SportEvent format
   const events: SportEvent[] = rows
-    .filter((row) => row.event) // Only include rows with valid events
+    .filter((row) => row.event)
     .map((row) => ({
       id: row.event!.id,
       name: row.event!.eventName,
@@ -33,7 +31,6 @@ export default async function AttendingPage() {
         : undefined,
     }));
 
-  // Create a map of event IDs to ticket IDs for the remove button
   const eventToTicketMap = new Map(
     rows.filter((row) => row.event).map((row) => [row.event!.id, row.ticket.id])
   );

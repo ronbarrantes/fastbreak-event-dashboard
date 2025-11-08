@@ -6,14 +6,62 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 
 const getURL = () => {
-  let url =
-    process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
-    process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
-    "http://localhost:3000/";
-  // Make sure to include `https://` when not localhost.
-  url = url.startsWith("http") ? url : `https://${url}`;
-  // Make sure to include a trailing `/`.
+  const isProduction = process.env.NODE_ENV === "production";
+  const isDevelopment = process.env.NODE_ENV === "development";
+
+  const envVars = {
+    NEXT_PUBLIC_SITE_URL: process?.env?.NEXT_PUBLIC_SITE_URL,
+    NEXT_PUBLIC_VERCEL_URL: process?.env?.NEXT_PUBLIC_VERCEL_URL,
+    VERCEL_URL: process?.env?.VERCEL_URL,
+    NODE_ENV: process?.env?.NODE_ENV,
+  };
+
+  let url: string | undefined;
+
+  url = process?.env?.NEXT_PUBLIC_SITE_URL;
+
+  if (!url) {
+    url = process?.env?.NEXT_PUBLIC_VERCEL_URL;
+  }
+
+  if (!url) {
+    url = process?.env?.VERCEL_URL;
+  }
+
+  if (!url && isDevelopment) {
+    url = "http://localhost:3000";
+  }
+
+  if (!url && isProduction) {
+    console.error("[getURL] ERROR: No URL found in production environment!");
+    console.error("[getURL] Environment variables:", envVars);
+    throw new Error(
+      "Missing NEXT_PUBLIC_SITE_URL or VERCEL_URL environment variable in production"
+    );
+  }
+
+  if (!url) {
+    url = "http://localhost:3000";
+  }
+
+  url = url.trim();
+
+  if (!url.startsWith("http")) {
+    url = `https://${url}`;
+  }
+
   url = url.endsWith("/") ? url : `${url}/`;
+
+  if (url.includes("localhost")) {
+    url = url.replace(/\/+$/, "");
+    if (!url.endsWith("/")) {
+      url = `${url}/`;
+    }
+  }
+
+  console.log("[getURL] Environment variables:", envVars);
+  console.log("[getURL] Resolved URL:", url);
+
   return url;
 };
 

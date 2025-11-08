@@ -23,25 +23,21 @@ export default async function EventSearchPage({
   const query = params.query ?? "";
   const sportType = params.sportType ?? "";
 
-  // Fetch available sports for the current query (to populate dropdown)
   const availableSports = await getAvailableSports(query || undefined);
 
-  // Fetch events with server-side filtering and user tickets in parallel
-  const [rows, userTickets] = await Promise.all([
+  const [eventItems, userTickets] = await Promise.all([
     getEventsWithVenue({
       name: query || undefined,
       sports: sportType ? [sportType] : undefined,
     }),
-    getUserTickets().catch(() => []), // Return empty array if not authenticated
+    getUserTickets().catch(() => []),
   ]);
 
-  // Create a Set of event IDs that the user has tickets for
   const purchasedEventIds = new Set(
     userTickets.map((ticket) => ticket.eventId)
   );
 
-  // Transform events with ticket status
-  const events: SportEvent[] = rows.map(({ event, venue }) => ({
+  const events: SportEvent[] = eventItems.map(({ event, venue }) => ({
     id: event.id,
     name: event.eventName,
     sportType: event.sportType as SportType,
@@ -92,7 +88,6 @@ export default async function EventSearchPage({
         <SearchForm availableSports={availableSports} />
       </Suspense>
 
-      {/* Display search results */}
       <div className="mt-8">
         {(query || sportType) && (
           <p className="mb-6 text-slate-400">

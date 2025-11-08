@@ -116,14 +116,9 @@ export const getUpcomingEvents = async (limit: number = 3) => {
   return events;
 };
 
-/**
- * Get distinct sport types available in events that match the given query
- * (excluding sport type filter to show all available sports for the query)
- */
 export const getAvailableSports = async (query?: string) => {
   const conditions = [];
 
-  // Filter by name (case-insensitive search in eventName and description)
   if (query) {
     const searchPattern = `%${query}%`;
     conditions.push(
@@ -138,7 +133,6 @@ export const getAvailableSports = async (query?: string) => {
     .selectDistinct({ sportType: event.sportType })
     .from(event);
 
-  // Apply conditions if any
   const queryBuilder =
     conditions.length > 0 ? baseQuery.where(and(...conditions)) : baseQuery;
 
