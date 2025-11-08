@@ -3,7 +3,7 @@
 import { and, desc, eq } from "drizzle-orm";
 
 import { db } from "@/server/db";
-import { ticket, TicketInsert } from "@/server/db/schema";
+import { event, ticket, TicketInsert, venue } from "@/server/db/schema";
 import { revalidateIfNeeded } from "@/utils/revalidate-if-needed";
 import { createClient } from "@/utils/supabase/server";
 
@@ -97,7 +97,6 @@ export const getUserTicketsWithEvents = async () => {
     throw new Error("User must be authenticated to get tickets");
   }
 
-  const { event, venue } = await import("@/server/db/schema");
   return await db
     .select({ ticket, event, venue })
     .from(ticket)
@@ -116,7 +115,6 @@ export const getTicketsByEvent = async (eventId: string) => {
 };
 
 export const getTicketsWithEvent = async () => {
-  const { event } = await import("@/server/db/schema");
   return await db
     .select({ ticket, event })
     .from(ticket)
