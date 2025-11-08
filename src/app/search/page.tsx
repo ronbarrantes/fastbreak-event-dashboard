@@ -25,7 +25,7 @@ export default async function EventSearchPage({
 
   const availableSports = await getAvailableSports(query || undefined);
 
-  const [rows, userTickets] = await Promise.all([
+  const [eventItems, userTickets] = await Promise.all([
     getEventsWithVenue({
       name: query || undefined,
       sports: sportType ? [sportType] : undefined,
@@ -37,7 +37,7 @@ export default async function EventSearchPage({
     userTickets.map((ticket) => ticket.eventId)
   );
 
-  const events: SportEvent[] = rows.map(({ event, venue }) => ({
+  const events: SportEvent[] = eventItems.map(({ event, venue }) => ({
     id: event.id,
     name: event.eventName,
     sportType: event.sportType as SportType,
