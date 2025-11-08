@@ -35,15 +35,13 @@ export default async function AttendingPage() {
 
   // Create a map of event IDs to ticket IDs for the remove button
   const eventToTicketMap = new Map(
-    rows
-      .filter((row) => row.event)
-      .map((row) => [row.event!.id, row.ticket.id])
+    rows.filter((row) => row.event).map((row) => [row.event!.id, row.ticket.id])
   );
 
   const renderActions = (event: SportEvent) => {
     const ticketId = eventToTicketMap.get(event.id);
     if (!ticketId) return null;
-    
+
     return <RemoveTicketButton event={event} ticketId={ticketId} />;
   };
 
@@ -58,13 +56,12 @@ export default async function AttendingPage() {
       <div className="mt-8">
         {events.length === 0 ? (
           <p className="py-12 text-center text-slate-400">
-            You don't have any tickets yet. Browse events and purchase tickets to
-            see them here!
+            {`You don't have any tickets yet. Browse events and purchase tickets to see them here!`}
           </p>
         ) : (
           <>
             <p className="mb-6 text-slate-400">
-              You're attending {events.length} event{events.length !== 1 ? "s" : ""}
+              {`You're attending ${events.length} event${events.length !== 1 ? "s" : ""}`}
             </p>
             <EventCards events={events} renderActions={renderActions} />
           </>

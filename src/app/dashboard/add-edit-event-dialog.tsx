@@ -82,7 +82,6 @@ type Venue = {
   amenities: string | null;
 };
 
-// Content component for the add/edit dialog (used with store)
 export const AddEditEventDialog = ({
   sportEvent,
   venues,
@@ -107,10 +106,8 @@ export const AddEditEventDialog = ({
     },
   });
 
-  // Use the date/time picker hook
   const cal = useDateTimePicker<z.infer<typeof eventSchema>>({ form });
 
-  // Initialize calendar when sportEvent changes
   useEffect(() => {
     if (sportEvent) {
       if (sportEvent.startDate) {
@@ -126,7 +123,6 @@ export const AddEditEventDialog = ({
         cal.setEndTime(endTimeStr);
       }
     } else {
-      // Reset calendar for new events
       cal.reset();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -442,7 +438,6 @@ export const AddEditEventDialog = ({
   );
 };
 
-// Trigger component for creating events (uses store, accepts children)
 export const CreateEventButton = ({
   children,
   venues,
@@ -466,7 +461,6 @@ export const CreateEventButton = ({
   );
 };
 
-// Trigger component for editing events (uses store, accepts children)
 export const EditEventButton = ({
   children,
   sportEvent,
@@ -493,4 +487,3 @@ export const EditEventButton = ({
     </div>
   );
 };
-

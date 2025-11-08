@@ -10,7 +10,6 @@ import { deleteEvent } from "@/lib/actions/events";
 import { useDialogStore } from "@/state/dialog-store";
 import { tryCatch } from "@/utils/try-catch";
 
-// Content component for the delete dialog (used with store)
 const DeleteEventDialogContent = ({
   eventId,
   eventName,
@@ -73,8 +72,7 @@ const DeleteEventDialogContent = ({
   );
 };
 
-// Trigger component for deleting events (uses store, accepts children)
-export const DeleteEventButton = ({
+export const DeleteEventDialog = ({
   children,
   eventId,
   eventName,
@@ -100,7 +98,3 @@ export const DeleteEventButton = ({
     </div>
   );
 };
-
-// Legacy export name for backward compatibility
-export const DeleteEventDialog = DeleteEventButton;
-
