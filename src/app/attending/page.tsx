@@ -7,32 +7,34 @@ import { SportEvent, SportType } from "@/types/types";
 export const dynamic = "force-dynamic";
 
 export default async function AttendingPage() {
-  const rows = await getUserTicketsWithEvents();
+  const ticketsWithEvents = await getUserTicketsWithEvents();
 
-  const events: SportEvent[] = rows
-    .filter((row) => row.event)
-    .map((row) => ({
-      id: row.event!.id,
-      name: row.event!.eventName,
-      sportType: row.event!.sportType as SportType,
-      date: row.event!.startDate ?? null,
-      description: row.event!.description,
-      startDate: row.event!.startDate ?? null,
-      endDate: row.event!.endDate ?? null,
-      venue: row.venue
+  const events: SportEvent[] = ticketsWithEvents
+    .filter((ticket) => ticket.event)
+    .map((event) => ({
+      id: event.event!.id,
+      name: event.event!.eventName,
+      sportType: event.event!.sportType as SportType,
+      date: event.event!.startDate ?? null,
+      description: event.event!.description,
+      startDate: event.event!.startDate ?? null,
+      endDate: event.event!.endDate ?? null,
+      venue: event.venue
         ? {
-            id: row.venue.id,
-            name: row.venue.name,
+            id: event.venue.id,
+            name: event.venue.name,
             available: true,
-            description: row.venue.description,
-            capacity: row.venue.capacity,
-            amenities: row.venue.amenities ?? undefined,
+            description: event.venue.description,
+            capacity: event.venue.capacity,
+            amenities: event.venue.amenities ?? undefined,
           }
         : undefined,
     }));
 
   const eventToTicketMap = new Map(
-    rows.filter((row) => row.event).map((row) => [row.event!.id, row.ticket.id])
+    ticketsWithEvents
+      .filter((row) => row.event)
+      .map((row) => [row.event!.id, row.ticket.id])
   );
 
   const renderActions = (event: SportEvent) => {
