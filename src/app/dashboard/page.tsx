@@ -10,7 +10,10 @@ import { ViewToggle } from "./view-toggle";
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const [rows, venues] = await Promise.all([getEventsWithVenue(), getVenues()]);
+  const [rows, venues] = await Promise.all([
+    getEventsWithVenue({ isOwner: true }),
+    getVenues(),
+  ]);
 
   const data: SportEvent[] = rows.map(({ event, venue }) => ({
     id: event.id,

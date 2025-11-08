@@ -51,34 +51,84 @@ export const updateEvent = async (
 ) => {
   if (!changes || Object.keys(changes).length === 0) return getEvent(id);
 
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("User must be authenticated to update events");
+  }
+
   const [updated] = await db
     .update(event)
     .set({ ...changes, updatedAt: new Date() })
-    .where(eq(event.id, id));
+    .where(and(eq(event.id, id), eq(event.userId, user.id)))
+    .returning();
+
+  if (!updated) {
+    throw new Error(
+      "Event not found or you do not have permission to update it"
+    );
+  }
+
   revalidateIfNeeded(options?.revalidate);
 
-  return updated ?? null;
+  return updated;
 };
 
 export const deleteEvent = async (
   id: string,
   options?: { revalidate?: string | string[] }
 ) => {
-  const [deleted] = await db.delete(event).where(eq(event.id, id)).returning();
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("User must be authenticated to delete events");
+  }
+
+  const [deleted] = await db
+    .delete(event)
+    .where(and(eq(event.id, id), eq(event.userId, user.id)))
+    .returning();
+
+  if (!deleted) {
+    throw new Error(
+      "Event not found or you do not have permission to delete it"
+    );
+  }
+
   revalidateIfNeeded(options?.revalidate);
 
-  return deleted ?? null;
+  return deleted;
 };
 
 type GetEventsWithVenueOptions = {
   name?: string;
   sports?: string[];
+  isOwner?: boolean;
 };
 
 export const getEventsWithVenue = async (
   options?: GetEventsWithVenueOptions
 ) => {
   const conditions = [];
+
+  if (options?.isOwner) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      throw new Error("User must be authenticated to view these events");
+    }
+
+    conditions.push(eq(event.userId, user.id));
+  }
 
   if (options?.name) {
     const searchPattern = `%${options.name}%`;
